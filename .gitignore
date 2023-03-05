@@ -1,0 +1,60 @@
+# Node modules
+node_modules
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependencies
+dependency-cache
+node_modules
+jspm_packages
+
+# Debugging
+.vscode
+.idea
+
+# Editor-specific files
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.*
+
+# Build files
+build
+
+# Coverage reports
+coverage
+
+# MacOS files
+.DS_Store
+
+# Temp files
+*.tmp
+
+# User-specific files
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Compiled binary addons (https://github.com/atom/atom/issues/6662)
+build/Release
+
+# OS generated files
+.DS_Store?
+Icon?
+ehthumbs.db
+Thumbs.db
+
