@@ -9,9 +9,9 @@ const BookSchema = new Schema({
     genre: [{ type: Schema.Types.ObjectId, ref: 'Genre' }],
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
     ratings: [{ type: Schema.Types.ObjectId, ref: 'Rating' }],
-    currentlyReading: [{ type: Schema.Types.ObjectIdj, ref: 'User' }],
-    wantToRead: [{ type: Schema.Types.ObjectIdj, ref: 'User' }],
-    read: [{ type: Schema.Types.ObjectIdj, ref: 'User' }],
+    currentlyReading: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    wantToRead: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    read: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     coverImage: { type: String, required: true },
 });
 
