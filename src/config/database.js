@@ -2,7 +2,7 @@ require("dotenv").config()
 const mongoose = require("mongoose")
 mongoose.set("strictQuery", false)
 
-const {LOCAL_DB_URI} = process.env
+const { LOCAL_DB_URI } = process.env
 const { REMOTE_DB_URL } = process.env
 
 exports.connect = () => {

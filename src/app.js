@@ -9,6 +9,8 @@ require("./config/database").connect()
 var indexRouter = require('./routes/index.route');
 var bookRouter = require('./routes/book.route');
 var adminBookRouter = require('./routes/admin-book.route');
+var authorRouter = require('./routes/author.route');
+var adminAuthorRouter = require('./routes/admin-author.route');
 
 
 var app = express();
@@ -27,6 +29,8 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/', indexRouter);
 app.use('/api/book', bookRouter);
 app.use('/api/admin/book', adminBookRouter);
+app.use('/api/author', authorRouter);
+app.use('/api/admin/author', adminAuthorRouter);
 
 
 

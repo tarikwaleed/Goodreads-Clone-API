@@ -3,14 +3,16 @@ const Schema = mongoose.Schema;
 
 const AuthorSchema = new Schema({
   first_name: { type: String, required: true, max: 100 },
-  family_name: { type: String, required: true, max: 100 },
+  last_name: { type: String, required: true, max: 100 },
   date_of_birth: { type: Date },
-  date_of_death: { type: Date }
+  date_of_death: { type: Date },
+  // photo: { type: String, required: true },
+
 });
 
 // Virtual for author's full name
 AuthorSchema.virtual('name').get(function () {
-  return this.family_name + ', ' + this.first_name;
+  return this.last_name + ', ' + this.first_name;
 });
 
 // Virtual for author's lifespan
