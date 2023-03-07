@@ -7,12 +7,12 @@ const BookSchema = new Schema({
     isbn: { type: String, required: true },
     author: [{ type: Schema.Types.ObjectId, ref: 'Author', required: true }],
     genre: [{ type: Schema.Types.ObjectId, ref: 'Genre' }],
+    coverImage: { type: String, required: true },
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
     ratings: [{ type: Schema.Types.ObjectId, ref: 'Rating' }],
     currentlyReading: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     wantToRead: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     read: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    coverImage: { type: String, required: true },
 });
 
 BookSchema.virtual('averageRating').get(function () {
