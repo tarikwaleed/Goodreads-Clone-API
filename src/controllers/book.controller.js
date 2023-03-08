@@ -22,10 +22,11 @@ exports.book_create = (req, res, next) => {
     });
 };
 exports.book_update = function (req, res) {
-    console.log(req.body);
+    const imagePath=req.file.path
+    req.body.coverImage=req.file.path
     Book.findByIdAndUpdate(req.params.id, { $set: req.body }, function (err, book) {
         if (err) return next(err);
-        res.send(req.body);
+        res.send(book);
     });
 };
 
