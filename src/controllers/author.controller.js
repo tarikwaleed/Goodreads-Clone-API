@@ -7,7 +7,7 @@ exports.author_create = (req, res, next) => {
     const author = new Author({
         first_name: req.body.first_name,
         last_name: req.body.last_name,
-        data_of_birth: req.body.data_of_birth,
+        date_of_birth: req.body.date_of_birth,
         date_of_death: req.body.date_of_death,
         // coverImage: req.file.path,
     });
