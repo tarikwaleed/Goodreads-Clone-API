@@ -57,10 +57,10 @@ exports.book_details = (req, res, next) => {
     Book.findById(req.params.id)
         .populate('author')
         .populate('genre')
-        .populate('reviews')
+        // .populate('reviews')
         // .populate('ratings')
-        .populate('averageRating')
-        .populate('ratingCount')
+        // .populate('averageRating')
+        // .populate('ratingCount')
         .exec((err, book) => {
             if (err) {
                 return next(err);
@@ -70,19 +70,24 @@ exports.book_details = (req, res, next) => {
                 err.status = 404;
                 return next(err);
             }
-            res.render('book_detail', { title: book.title, book });
+            res.json(book)
         });
 };
 
 exports.book_list = (req, res, next) => {
     Book.find()
         .populate('author')
-        .populate('genre')
+        // .populate('genre')
+        // .populate('reviews')
+        // .populate('ratings')
+        // .populate('read')
+        // .populate('currentlyReading')
+        // .populate('wantToRead')
         .exec((err, book_list) => {
             if (err) {
                 return next(err);
             }
-            res.render('book_list', { title: 'Book List', book_list });
+            res.json(book_list)
         });
 };
 
