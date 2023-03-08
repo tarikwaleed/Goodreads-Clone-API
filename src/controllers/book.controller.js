@@ -21,6 +21,13 @@ exports.book_create = (req, res, next) => {
         res.json(book);
     });
 };
+exports.book_update = function (req, res) {
+    console.log(req.body);
+    Book.findByIdAndUpdate(req.params.id, { $set: req.body }, function (err, book) {
+        if (err) return next(err);
+        res.send(req.body);
+    });
+};
 
 exports.book_details = (req, res, next) => {
     Book.findById(req.params.id)
@@ -66,9 +73,3 @@ exports.book_delete = (req, res, next) => {
 };
 
 
-exports.book_update = function (req, res) {
-    Book.findByIdAndUpdate(req.params.id, { $set: req.body }, function (err, book) {
-        if (err) return next(err);
-        res.send('Book updated.');
-    });
-};
