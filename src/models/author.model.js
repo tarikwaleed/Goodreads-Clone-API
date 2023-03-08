@@ -6,7 +6,7 @@ const AuthorSchema = new Schema({
   last_name: { type: String, required: true, max: 100 },
   date_of_birth: { type: Date },
   date_of_death: { type: Date },
-  // photo: { type: String, required: true },
+  photo: { type: String, required: true },
 
 });
 

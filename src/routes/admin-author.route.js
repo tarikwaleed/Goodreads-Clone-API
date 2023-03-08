@@ -1,10 +1,11 @@
 const express = require('express');
 const auth = require('../middlewares/auth');
 const authorController = require('../controllers/author.controller');
+const upload = require('../middlewares/image_upload');
 
 const router = express.Router();
 
-router.post('/',  authorController.author_create);
+router.post('/', upload.single('photo'), authorController.author_create);
 router.put('/:id', auth, authorController.author_update);
 router.delete('/:id', auth, authorController.author_delete);
 

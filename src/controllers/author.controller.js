@@ -9,7 +9,7 @@ exports.author_create = (req, res, next) => {
         last_name: req.body.last_name,
         date_of_birth: req.body.date_of_birth,
         date_of_death: req.body.date_of_death,
-        // coverImage: req.file.path,
+        photo: req.file.path,
     });
 
     author.save((err) => {
