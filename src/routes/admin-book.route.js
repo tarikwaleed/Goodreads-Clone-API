@@ -8,6 +8,6 @@ const router = express.Router();
 
 router.post('/', upload.single('coverImage'), bookController.book_create);
 router.put('/:id', upload.single('coverImage'), bookController.book_update);
-router.delete('/:id', auth, bookController.book_delete);
+router.delete('/:id',  bookController.book_delete);
 
 module.exports = router;

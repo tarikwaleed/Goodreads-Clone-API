@@ -22,12 +22,35 @@ exports.book_create = (req, res, next) => {
     });
 };
 exports.book_update = function (req, res) {
-    const imagePath=req.file.path
-    req.body.coverImage=req.file.path
-    Book.findByIdAndUpdate(req.params.id, { $set: req.body }, function (err, book) {
-        if (err) return next(err);
-        res.send(book);
-    });
+    req.body.coverImage = req.file.path
+    Book.findByIdAndUpdate(req.params.id,
+        { $set: req.body },
+        { new: true },
+        function (err, book) {
+            if (err) return next(err);
+            res.send(book);
+        });
+};
+exports.book_delete = async (req, res, next) => {
+    //? Callbacks Implementation
+    // Book.findByIdAndRemove(req.body.id, (err) => {
+    //     if (err) {
+    //         return next(err);
+    //     }
+    //     res.json("book deleted")
+    // });
+    //? async/await Implementation
+    const id = req.params.id
+    const filter = { _id: id }
+    try {
+        const deletedBook = await Book.findByIdAndDelete(filter)
+        res.json(deletedBook)
+    } catch (error) {
+        next(`Outch! Couldn't delete the id ${id}`)
+
+    }
+
+
 };
 
 exports.book_details = (req, res, next) => {
@@ -63,14 +86,5 @@ exports.book_list = (req, res, next) => {
         });
 };
 
-exports.book_delete = (req, res, next) => {
-    Book.findByIdAndRemove(req.body.bookid, (err) => {
-        if (err) {
-            return next(err);
-        }
-        // Success - go to book list.
-        res.redirect('/catalog/books');
-    });
-};
 
 
