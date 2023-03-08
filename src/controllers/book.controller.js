@@ -4,13 +4,14 @@ const Book = require('../models/book.model');
 exports.book_create = (req, res, next) => {
     // Validate and sanitize fields.
 
+
     const book = new Book({
         title: req.body.title,
         summary: req.body.summary,
         isbn: req.body.isbn,
         author: req.body.author,
         genre: req.body.genre,
-        // coverImage: req.file.path,
+        coverImage: req.file.path
     });
 
     book.save((err) => {
