@@ -8,10 +8,10 @@ console.log(
 const userArgs = process.argv.slice(2);
 
 const async = require("async");
-const Book = require("./models/book");
-const Author = require("./models/author");
-const Genre = require("./models/genre");
-const BookInstance = require("./models/bookinstance");
+const Book = require("./src/models/book.model");
+const Author = require("./src/models/author.model");
+const Genre = require("./src/models/genre.model");
+const BookInstance = require("./src/models/genre.model");
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false); // Prepare for Mongoose 7
@@ -28,8 +28,8 @@ const genres = [];
 const books = [];
 const bookinstances = [];
 
-function authorCreate(first_name, family_name, d_birth, d_death, cb) {
-  authordetail = { first_name: first_name, family_name: family_name };
+function authorCreate(first_name, last_name, d_birth, d_death, cb) {
+  authordetail = { first_name: first_name, last_name: last_name };
   if (d_birth != false) authordetail.date_of_birth = d_birth;
   if (d_death != false) authordetail.date_of_death = d_death;
 
@@ -318,7 +318,7 @@ function createBookInstances(cb) {
 }
 
 async.series(
-  [createGenreAuthors, createBooks, createBookInstances],
+  [createGenreAuthors],
   // Optional callback
   function (err, results) {
     if (err) {
