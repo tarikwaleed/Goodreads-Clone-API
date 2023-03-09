@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const AuthorSchema = new Schema({
@@ -16,15 +16,15 @@ AuthorSchema.virtual('name').get(function () {
 });
 
 // Virtual for author's lifespan
-AuthorSchema.virtual('lifespan').get(function () {
+AuthorSchema.virtual("lifespan").get(function () {
   return (
     this.date_of_death.getYear() - this.date_of_birth.getYear()
   ).toString();
 });
 
 // Virtual for author's URL
-AuthorSchema.virtual('url').get(function () {
-  return '/catalog/author/' + this._id;
+AuthorSchema.virtual("url").get(function () {
+  return "/author/" + this._id;
 });
 
-module.exports = mongoose.model('Author', AuthorSchema);
+module.exports = mongoose.model("Author", AuthorSchema);

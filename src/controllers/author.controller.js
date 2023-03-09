@@ -1,68 +1,144 @@
+const Author = require("../models/author.model");
+const Book = require("../models/book.model");
+const { body, validationResult } = require("express-validator");
 
-const Author = require('../models/author.model');
-
-exports.author_create = (req, res, next) => {
-    // Validate and sanitize fields.
-
-    const author = new Author({
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        date_of_birth: req.body.date_of_birth,
-        date_of_death: req.body.date_of_death,
-        photo: req.file.path,
-    });
-
-    author.save((err) => {
-        if (err) {
-            return next(err);
-        }
-        res.json(author);
+exports.author_list = function (req, res, next) {
+  Author.find()
+    .sort([["last_name", "ascending"]])
+    .exec()
+    .then((list_authors) => {
+      res.send(list_authors);
+    })
+    .catch((err) => {
+      return next(err);
     });
 };
 
-exports.author_details = (req, res, next) => {
-    Author.findById(req.params.id)
-        .populate('author')
-        .populate('genre')
-        .populate('reviews')
-        // .populate('ratings')
-        .populate('averageRating')
-        .populate('ratingCount')
-        .exec((err, author) => {
-            if (err) {
-                return next(err);
-            }
-            if (author == null) {
-                const err = new Error('Author not found');
-                err.status = 404;
-                return next(err);
-            }
-            res.render('author_detail', { title: book.title, book });
-        });
+exports.author_detail = async (req, res, next) => {
+  try {
+    var results = {};
+    results["author"] = await Author.findById(req.params.id).exec();
+    results["authors_books"] = await Book.find(
+      { author: req.params.id },
+      "title summary"
+    ).exec();
+
+    if (results.author == null) {
+      const err = new Error("Author not found");
+      err.status = 404;
+      return next(err);
+    }
+    res.send(results.author);
+  } catch (err) {
+    return next(err);
+  }
 };
 
-exports.author_list = (req, res, next) => {
-    Author.find()
-        .populate('author')
-        .populate('genre')
-        .exec((err, author_list) => {
-            if (err) {
-                return next(err);
-            }
-            res.render('author_list', { title: 'Author List', book_list });
-        });
-};
-
-exports.author_delete = (req, res, next) => {
-    Author.findByIdAndRemove(req.body.authorid, (err) => {
-        if (err) {
-            return next(err);
-        }
-        // Success - go to author list.
-        res.redirect('/catalog/authors');
+exports.author_create_post = (req, res, next) => {
+  const author = new Author({
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
+    date_of_birth: req.body.date_of_birth,
+    date_of_death: req.body.date_of_death,
+  });
+  author
+    .save()
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      return next(err);
     });
 };
 
+exports.author_delete = async (req, res, next) => {
+  try {
+    var results = {};
+    results["author"] = await Author.findById(req.params.id).exec();
+    results["authors_books"] = await Book.find({
+      author: req.params.id,
+    }).exec();
+
+    if (results.author == null) {
+      const err = new Error("Author not found");
+      err.status = 404;
+      return next(err);
+    }
+    if (results.authors_books.length > 0) {
+      const err = new Error("There are book that holds author name");
+      err.status = 404;
+      return next(err);
+    }
+    Author.findByIdAndRemove(req.params.id)
+      .then((data) => {
+        console.log("removed");
+        res.redirect("/author/authors");
+      })
+      .catch((err) => {
+        return next(err);
+      });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.author_update = async (req, res, next) => {
+  try {
+    var results = await Author.findById(req.params.id).exec();
+
+    if (results == null) {
+      // No results.
+      const err = new Error("Author not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    // update Author data
+    Author.findByIdAndUpdate(req.params.id, {
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      date_of_birth: req.body.date_of_birth,
+      date_of_death: req.body.date_of_death,
+    })
+      .then(() => {
+        console.log("updated");
+        res.redirect(`/author/${req.params.id}`);
+      })
+      .catch((err) => {
+        return next(err);
+      });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+
+exports.author_delete_get = async (req, res, next) => {
+  try {
+    var results = {};
+    results["author"] = await Author.findById(req.params.id).exec();
+    results["authors_books"] = await Book.find({
+      author: req.params.id,
+    }).exec();
+
+    if (results.author == null) {
+      // No results.
+      res.redirect("/catalog/authors");
+    }
+    // Successful, so render.
+    res.render("author_delete", {
+      title: "Delete Author",
+      author: results.author,
+      author_books: results.authors_books,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+// Display Author update form on GET.  //not implementing
+exports.author_update_get = (req, res) => {
+  res.send("NOT IMPLEMENTED: Author update GET");
+};
 
 exports.author_update = function (req, res) {
     Author.findByIdAndUpdate(req.params.id, { $set: req.body }, function (err, author) {
