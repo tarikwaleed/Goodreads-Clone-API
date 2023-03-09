@@ -1,8 +1,7 @@
 const Author = require("../models/author.model");
 const Book = require("../models/book.model");
-const { body, validationResult } = require("express-validator");
 
-exports.author_list = function (req, res, next) {
+exports.authors_list = function (req, res, next) {
   Author.find()
     .sort([["last_name", "ascending"]])
     .exec()
@@ -14,7 +13,7 @@ exports.author_list = function (req, res, next) {
     });
 };
 
-exports.author_detail = async (req, res, next) => {
+exports.author_details = async (req, res, next) => {
   try {
     var results = {};
     results["author"] = await Author.findById(req.params.id).exec();
