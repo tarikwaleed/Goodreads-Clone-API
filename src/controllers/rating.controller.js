@@ -1,4 +1,4 @@
-const rating = require("../models/rating.model");
+const Rating = require("../models/rating.model");
 const Book = require("../models/book.model");
 const { body, validationResult } = require("express-validator");
 
@@ -8,7 +8,7 @@ exports.rating_list = async function (req, res, next) {
     var results = {};
     // results["rating"] = await rating.findById(req.params.id).exec();
     // results["rating_books"] = await Book.find({ rating: req.params.id }).exec();
-    results["rating"] = await rating.countDocuments({ book: req.body.book });
+    results["rating"] = await Rating.countDocuments({ book: req.body.book });
     if (results.rating == null) {
       // No results.
       const err = new Error("rating not found");
@@ -30,9 +30,10 @@ exports.rating_list = async function (req, res, next) {
 
 // Display detail page for a specific rating.
 exports.rating_detail = async (req, res, next) => {
+  console.log("asdasdasdad");
   try {
     var results = {};
-    results["rating_book"] = await rating.findById(req.params.id).exec();
+    results["rating"] = await Rating.findById(req.params.id).exec();
     results["rating_user"] = await Book.find({ rating: req.params.id }).exec();
 
     if (results.rating == null) {
@@ -57,22 +58,27 @@ exports.rating_detail = async (req, res, next) => {
 // Handle rating create on POST.
 exports.rating_create_post = (req, res, next) => {
   // Create a rating object with escaped and trimmed data.
-  const rating = new rating({ name: req.body.name });
+  const rating = new Rating({
+    book: req.body.book,
+    user: req.body.user,
+    rating: req.body.rating,
+  });
 
   // Data from form is valid.
   // Check if rating with same name already exists.
-  rating
-    .findOne({ name: req.body.name })
+  Rating.findOne({ book: req.body.book, user: req.body.user })
     .exec()
     .then((found_rating) => {
       if (found_rating) {
         // rating exists, redirect to its detail page.
-        res.redirect(found_rating.url);
+        //res.redirect(303, `/${found_rating._id}`);
+        req.body._id = found_rating._id;
+        return exports.rating_update(req, res, next);
       } else {
         rating
           .save()
           .then(() => {
-            res.redirect(rating.url);
+            res.json(rating);
           })
           .catch((err) => {
             return next(err);
@@ -87,33 +93,20 @@ exports.rating_create_post = (req, res, next) => {
 // Handle rating delete on POST.
 exports.rating_delete = async (req, res, next) => {
   try {
-    var results = {};
-    results["rating"] = await rating.findById(req.params.id).exec();
-    results["rating_books"] = await Book.find({ rating: req.params.id }).exec();
+    Rating.findOneAndRemove(req.params.id)
+      .then((results) => {
+        if (results.rating == null) {
+          // No results.
+          const err = new Error("rating not found");
+          err.status = 404;
+          return next(err);
+        }
 
-    if (results.rating == null) {
-      // No results.
-      const err = new Error("rating not found");
-      err.status = 404;
-      return next(err);
-    }
-
-    // Success
-    if (results.rating_books.length > 0) {
-      // rating has books. Render in same way as for GET route.
-      const err = new Error("There are book that holds that rating");
-      err.status = 404;
-      return next(err);
-    }
-
-    rating
-      .findByIdAndRemove(req.params.id)
-      .then((data) => {
         // Success - go to author list
         // res.sendStatus(200);
         // res.send("removed");
         console.log("removed");
-        res.redirect(`/rating/ratings`);
+        res.sendStatus(200);
       })
       .catch((err) => {
         return next(err);
@@ -125,27 +118,34 @@ exports.rating_delete = async (req, res, next) => {
 
 // Handle rating update on POST.
 exports.rating_update = async (req, res, next) => {
+  //console.log(req.body);
   try {
-    var results = await rating.findById(req.params.id).exec();
-
-    if (results == null) {
-      // No results.
-      const err = new Error("rating not found");
-      err.status = 404;
-      return next(err);
-    }
-
     // update Author data
-    rating
-      .findByIdAndUpdate(req.params.id, {
-        name: req.body.name,
-      })
-      .then(() => {
+    Rating.findOneAndUpdate(
+      req.body._id,
+      {
+        book: req.body.book,
+        user: req.body.user,
+        rating: req.body.rating,
+      },
+      {
+        new: true,
+      }
+    )
+      .exec()
+      .then((results) => {
+        console.log(results);
+        if (results == null) {
+          // No results.
+          const err = new Error("rating not found");
+          err.status = 404;
+          return next(err);
+        }
         // Success - go to author list
         // res.sendStatus(200);
         // res.send("removed");
         console.log("updated");
-        res.redirect(`/rating/${req.params.id}`);
+        res.json(results);
       })
       .catch((err) => {
         return next(err);

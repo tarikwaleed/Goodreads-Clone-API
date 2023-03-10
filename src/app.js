@@ -10,6 +10,7 @@ var bookRouter = require("./routes/book.route");
 var authorRouter = require("./routes/author.route");
 var genreRouter = require("./routes/genre.route");
 var ratingRouter = require("./routes/rating.route");
+var reviewRouter = require("./routes/review.route");
 
 var app = express();
 
@@ -39,6 +40,7 @@ app.use("/books", bookRouter);
 app.use("/author", authorRouter);
 app.use("/genre", genreRouter);
 app.use("/rating", ratingRouter);
+app.use("/review", reviewRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -8,11 +8,11 @@ router.get("/ratings", rating_controller.rating_list);
 // GET request for one rating.
 router.get("/:id", rating_controller.rating_detail);
 
-// POST request to delete rating.
-router.delete("/:id", rating_controller.rating_delete);
-
 // POST request to update rating.
 router.put("/:id", rating_controller.rating_update);
+
+// POST request to delete rating.
+router.delete("/:id", rating_controller.rating_delete);
 
 //POST request for creating rating.
 router.post("/create", rating_controller.rating_create_post);
