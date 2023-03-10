@@ -33,7 +33,7 @@ exports.author_details = async (req, res, next) => {
   }
 };
 
-exports.author_create_post = (req, res, next) => {
+exports.author_create = (req, res, next) => {
   const author = new Author({
     first_name: req.body.first_name,
     last_name: req.body.last_name,
@@ -112,36 +112,3 @@ exports.author_update = async (req, res, next) => {
 };
 
 
-exports.author_delete_get = async (req, res, next) => {
-  try {
-    var results = {};
-    results["author"] = await Author.findById(req.params.id).exec();
-    results["authors_books"] = await Book.find({
-      author: req.params.id,
-    }).exec();
-
-    if (results.author == null) {
-      // No results.
-      res.redirect("/catalog/authors");
-    }
-    // Successful, so render.
-    res.render("author_delete", {
-      title: "Delete Author",
-      author: results.author,
-      author_books: results.authors_books,
-    });
-  } catch (err) {
-    return next(err);
-  }
-};
-// Display Author update form on GET.  //not implementing
-exports.author_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Author update GET");
-};
-
-exports.author_update = function (req, res) {
-    Author.findByIdAndUpdate(req.params.id, { $set: req.body }, function (err, author) {
-        if (err) return next(err);
-        res.send('Author updated.');
-    });
-};
