@@ -30,7 +30,6 @@ exports.rating_list = async function (req, res, next) {
 
 // Display detail page for a specific rating.
 exports.rating_detail = async (req, res, next) => {
-  console.log("asdasdasdad");
   try {
     var results = {};
     results["rating"] = await Rating.findById(req.params.id).exec();

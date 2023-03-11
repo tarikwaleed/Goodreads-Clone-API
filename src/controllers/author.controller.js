@@ -9,7 +9,7 @@ exports.author_list = function (req, res, next) {
     .exec()
     .then((list_authors) => {
       // console.log(list_authors);
-      res.send(list_authors);
+      res.json(list_authors);
       //   res.render("author_list", {
       //     title: "Author List",
       //     author_list: list_authors,
@@ -38,7 +38,7 @@ exports.author_detail = async (req, res, next) => {
     }
     // Successful, so render.
     // console.log(results.author);
-    res.send(results.author);
+    res.json(results.author);
     // res.render("author_detail", {
     //   title: "Author Detail",
     //   author: results.author,
@@ -59,13 +59,14 @@ exports.author_create_post = (req, res, next) => {
     last_name: req.body.last_name,
     date_of_birth: req.body.date_of_birth,
     date_of_death: req.body.date_of_death,
+    photo: req.body.photo,
   });
   author
     .save()
     .then((data) => {
       // res.json(data);
       // res.sendStatus(200);
-      res.redirect(author.url);
+      res.sendStatus(200);
     })
     .catch((err) => {
       return next(err);
@@ -138,10 +139,10 @@ exports.author_update = async (req, res, next) => {
     })
       .then(() => {
         // Success - go to author list
-        // res.sendStatus(200);
-        // res.send("removed");
         console.log("updated");
-        res.redirect(`/author/${req.params.id}`);
+        res.sendStatus(200);
+        // res.send("removed");
+        // res.redirect(`/author/${req.params.id}`);
       })
       .catch((err) => {
         return next(err);

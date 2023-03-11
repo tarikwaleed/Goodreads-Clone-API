@@ -56,12 +56,14 @@ exports.genre_create_post = (req, res, next) => {
     .then((found_genre) => {
       if (found_genre) {
         // Genre exists, redirect to its detail page.
-        res.redirect(found_genre.url);
+        // res.redirect(found_genre.url);
+        res.send("already created");
       } else {
         genre
           .save()
           .then(() => {
-            res.redirect(genre.url);
+            res.sendStatus(200);
+            // res.redirect(genre.url);
           })
           .catch((err) => {
             return next(err);
@@ -101,7 +103,8 @@ exports.genre_delete = async (req, res, next) => {
         // res.sendStatus(200);
         // res.send("removed");
         console.log("removed");
-        res.redirect(`/genre/genres`);
+        //res.redirect(`/genre/genres`);
+        res.sendStatus(200);
       })
       .catch((err) => {
         return next(err);
@@ -132,7 +135,7 @@ exports.genre_update = async (req, res, next) => {
         // res.sendStatus(200);
         // res.send("removed");
         console.log("updated");
-        res.redirect(`/genre/${req.params.id}`);
+        res.sendStatus(200);
       })
       .catch((err) => {
         return next(err);
