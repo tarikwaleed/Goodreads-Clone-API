@@ -1,0 +1,181 @@
+const bcrypt = require("bcrypt");
+const User = require("../models/user.model");
+const Book = require("../models/book.model");
+const { body, validationResult } = require("express-validator");
+
+// Display list of all Users.
+exports.user_list = function (req, res, next) {
+  User.find()
+    .exec()
+    .then((list_users) => {
+      // console.log(list_users);
+      res.json(list_users);
+      //   res.render("user_list", {
+      //     title: "User List",
+      //     user_list: list_users,
+      //   });
+    })
+    .catch((err) => {
+      return next(err);
+    });
+};
+
+// Display detail page for a specific User.
+exports.user_detail = async (req, res, next) => {
+  try {
+    var results = {};
+    results["user"] = await User.findById(req.params.id).exec();
+
+    if (results.user == null) {
+      // No results.
+      const err = new Error("User not found");
+      err.status = 404;
+      return next(err);
+    }
+    // Successful, so render.
+    // console.log(results.user);
+    res.json(results.user);
+    // res.render("user_detail", {
+    //   title: "User Detail",
+    //   user: results.user,
+    //   user_books: results.users_books,
+    // });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// Handle User create on POST.
+exports.user_create_post = (req, res, next) => {
+  // Data from form is valid.
+
+  const hashPass = bcrypt.hashSync(req.body.password, 10);
+  // Create an User object with escaped and trimmed data.
+  const user = new User({
+    username: req.body.username,
+    email: req.body.email,
+    password: hashPass,
+    role: req.body.role,
+  });
+
+  User.findOne({ book: req.body.book, user: req.body.user })
+    .exec()
+    .then((found_user) => {
+      if (found_user) {
+        res.send("email already exists");
+      } else {
+        user
+          .save()
+          .then((data) => {
+            // res.json(data);
+            // res.sendStatus(200);
+            res.sendStatus(200);
+          })
+          .catch((err) => {
+            return next(err);
+          });
+      }
+    })
+    .catch((err) => {
+      return next(err);
+    });
+
+  // Successful - redirect to new user record.
+};
+
+// Handle User delete on POST.
+exports.user_delete = async (req, res, next) => {
+  try {
+    var results = {};
+    results["user"] = await User.findById(req.params.id).exec();
+
+    if (results.user == null) {
+      // No results.
+      const err = new Error("User not found");
+      err.status = 404;
+      return next(err);
+    }
+    // User has no books. Delete object and redirect to the list of users.
+    User.findByIdAndRemove(req.params.id)
+      .then((data) => {
+        // Success - go to user list
+        console.log("removed");
+        res.sendStatus(200);
+        // res.send("removed");
+        // res.redirect("/user/users");
+      })
+      .catch((err) => {
+        return next(err);
+      });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// Handle User update on POST.
+exports.user_update = async (req, res, next) => {
+  try {
+    var results = await User.findById(req.params.id).exec();
+
+    if (results == null) {
+      // No results.
+      const err = new Error("User not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    const hashPass = bcrypt.hashSync(req.body.password, 10);
+    // update User data
+    User.findByIdAndUpdate(req.params.id, {
+      username: req.body.username,
+      email: req.body.email,
+      password: hashPass,
+      role: req.body.role,
+    })
+      .then(() => {
+        // Success - go to user list
+        console.log("updated");
+        res.sendStatus(200);
+        // res.send("removed");
+        // res.redirect(`/user/${req.params.id}`);
+      })
+      .catch((err) => {
+        return next(err);
+      });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// Display User create form on GET.  //not implementing
+exports.user_create_get = (req, res, next) => {
+  res.render("user_form", { title: "Create User" });
+};
+
+// Display User delete form on GET. //not implementing
+exports.user_delete_get = async (req, res, next) => {
+  try {
+    var results = {};
+    results["user"] = await User.findById(req.params.id).exec();
+    results["users_books"] = await Book.find({
+      user: req.params.id,
+    }).exec();
+
+    if (results.user == null) {
+      // No results.
+      res.redirect("/catalog/users");
+    }
+    // Successful, so render.
+    res.render("user_delete", {
+      title: "Delete User",
+      user: results.user,
+      user_books: results.users_books,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+// Display User update form on GET.  //not implementing
+exports.user_update_get = (req, res) => {
+  res.send("NOT IMPLEMENTED: User update GET");
+};

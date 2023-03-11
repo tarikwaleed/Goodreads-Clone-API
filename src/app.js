@@ -1,17 +1,20 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-require("./config/database").connect()
+var createError = require("http-errors");
+var express = require("express");
+var path = require("path");
+var cookieParser = require("cookie-parser");
+var logger = require("morgan");
+require("./config/database").connect();
 
-//! Here
-var indexRouter = require('./routes/index.route');
-var bookRouter = require('./routes/book.route');
-var adminBookRouter = require('./routes/admin-book.route');
-var authorRouter = require('./routes/author.route');
-var adminAuthorRouter = require('./routes/admin-author.route');
-
+var indexRouter = require("./routes/index.route");
+var bookRouter = require("./routes/book.route");
+var adminBookRouter = require("./routes/admin-book.route");
+var authorRouter = require("./routes/author.route");
+var adminAuthorRouter = require("./routes/admin-author.route");
+//var authorRouter = require("./routes/author.route");
+var genreRouter = require("./routes/genre.route");
+var ratingRouter = require("./routes/rating.route");
+var reviewRouter = require("./routes/review.route");
+var userRouter = require("./routes/user.route");
 
 var app = express();
 
@@ -29,16 +32,17 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, "..", "public")));
 
-//! Here
-app.use('/', indexRouter);
-app.use('/api/book', bookRouter);
-app.use('/api/admin/book', adminBookRouter);
-app.use('/api/author', authorRouter);
-app.use('/api/admin/author', adminAuthorRouter);
-
-
+app.use("/", indexRouter);
+app.use("/api/book", bookRouter);
+app.use("/api/admin/book", adminBookRouter);
+app.use("/api/author", authorRouter);
+app.use("/api/admin/author", adminAuthorRouter);
+app.use("/genre", genreRouter);
+app.use("/rating", ratingRouter);
+app.use("/review", reviewRouter);
+app.use("/user", userRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
