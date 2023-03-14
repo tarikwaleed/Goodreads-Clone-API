@@ -6,6 +6,21 @@ const user_controller = require("../controllers/user.controller");
 router.get("/users", user_controller.user_list);
 
 // GET request for one user.
+router.get("/:id/books", user_controller.user_books_list);
+
+// GET request for one user.
+router.get(
+  "/:id/books/currentlyReading",
+  user_controller.user_books_currentlyReading_list
+);
+
+// GET request for one user.
+router.get("/:id/books/wantToRead", user_controller.user_books_wantToRead_list);
+
+// GET request for one user.
+router.get("/:id/books/read", user_controller.user_books_read_list);
+
+// GET request for one user books.
 router.get("/:id", user_controller.user_detail);
 
 // POST request to update user.
