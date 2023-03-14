@@ -127,37 +127,24 @@ exports.user_books_read_list = function (req, res, next) {
     });
 };
 
-// Display detail page for a specific User.
 exports.user_detail = async (req, res, next) => {
   try {
     var results = {};
     results["user"] = await User.findById(req.params.id).exec();
 
     if (results.user == null) {
-      // No results.
       const err = new Error("User not found");
       err.status = 404;
       return next(err);
     }
-    // Successful, so render.
-    // console.log(results.user);
     res.json(results.user);
-    // res.render("user_detail", {
-    //   title: "User Detail",
-    //   user: results.user,
-    //   user_books: results.users_books,
-    // });
   } catch (err) {
     return next(err);
   }
 };
 
-// Handle User create on POST.
 exports.user_create_post = (req, res, next) => {
-  // Data from form is valid.
-
   const hashPass = bcrypt.hashSync(req.body.password, 10);
-  // Create an User object with escaped and trimmed data.
   const user = new User({
     username: req.body.username,
     email: req.body.email,
@@ -186,18 +173,14 @@ exports.user_create_post = (req, res, next) => {
     .catch((err) => {
       return next(err);
     });
-
-  // Successful - redirect to new user record.
 };
 
-// Handle User delete on POST.
 exports.user_delete = async (req, res, next) => {
   try {
     var results = {};
     results["user"] = await User.findById(req.params.id).exec();
 
     if (results.user == null) {
-      // No results.
       const err = new Error("User not found");
       err.status = 404;
       return next(err);
