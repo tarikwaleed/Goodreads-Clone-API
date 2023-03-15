@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res, next) => {
+    const result = {}
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
@@ -16,8 +17,9 @@ exports.login = async (req, res, next) => {
                 payload,
                 process.env.TOKEN_KEY,
             );
-            user.token = token;
-            res.status(200).json(user);
+            result.token = token
+            result.user = user
+            res.status(200).json(result);
         }
         res.status(400).send("Invalid Credentials");
     } catch (err) {
@@ -26,6 +28,7 @@ exports.login = async (req, res, next) => {
 
 }
 exports.register = async (req, res, next) => {
+    const result = {}
     try {
         const { username, email, password } = req.body;
         const oldUser = await User.findOne({ email });
@@ -48,8 +51,9 @@ exports.register = async (req, res, next) => {
             payload,
             process.env.TOKEN_KEY,
         );
-        user.token = token;
-        res.status(201).json(user);
+        result.token = token
+        result.user = user
+        res.status(201).json(result);
     } catch (err) {
         console.log(err);
     }
