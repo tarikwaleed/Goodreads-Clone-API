@@ -75,6 +75,46 @@ exports.user_books_list = async function (req, res, next) {
   }
 };
 
+exports.update_user_books_list = async function (req, res, next) {
+  try {
+    if (req.body.bookStatus == "read") {
+      Book.updateOne(
+        { _id: req.body.bookID },
+        {
+          $pull: { currentlyReading: req.params.id, wantToRead: req.params.id },
+          $push: { read: req.params.id },
+        }
+      ).then(() => {
+        res.sendStatus(200);
+      });
+    }
+    if (req.body.bookStatus == "currentlyReading") {
+      Book.updateOne(
+        { _id: req.body.bookID },
+        {
+          $pull: { read: req.params.id, wantToRead: req.params.id },
+          $push: { currentlyReading: req.params.id },
+        }
+      ).then(() => {
+        res.sendStatus(200);
+      });
+    }
+    if (req.body.bookStatus == "wantToRead") {
+      Book.updateOne(
+        { _id: req.body.bookID },
+        {
+          $pull: { currentlyReading: req.params.id, read: req.params.id },
+          $push: { wantToRead: req.params.id },
+        }
+      ).then(() => {
+        res.sendStatus(200);
+      });
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
 // Display list of all Users.
 exports.user_books_currentlyReading_list = function (req, res, next) {
   console.log(req.params.id);
