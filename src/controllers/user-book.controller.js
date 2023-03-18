@@ -8,6 +8,7 @@ exports.user_books_list = async function (req, res, next) {
     var results = {};
     results["data"] = [];
     const id = req.originalUrl.split('/')[3]
+    // const id=req.params.user_id
 
     await Book.find({
       read: { $in: [id] },
@@ -38,16 +39,12 @@ exports.user_books_list = async function (req, res, next) {
           results.data.push(element);
         });
       });
+    results.length = results.data.length
+    res.json(results);
 
-    if (results.data.length == 0) {
-      const err = new Error("Books not found");
-      err.status = 404;
-      return next(err);
-    }
 
     //   // Successful, so render.
     //   // console.log(results.author);
-    res.json(results);
     //   // res.render("author_detail", {
     //   //   title: "Author Detail",
     //   //   author: results.author,
