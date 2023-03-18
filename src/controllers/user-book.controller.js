@@ -260,7 +260,7 @@ exports.user_books_read_list = function (req, res, next) {
     });
 };
 exports.update_user_book = async function (req, res, next) {
-  const id = req.originalUrl.split("/")[3];
+  const id = req.originalUrl.split("/")[3] || req.body.userID;
   try {
     if (req.body.bookStatus == "read") {
       Book.updateOne(
