@@ -299,3 +299,19 @@ exports.update_user_book = async function (req, res, next) {
     return next(err);
   }
 };
+
+exports.delete_user_book = async function (req, res, next) {
+  const id = req.originalUrl.split("/")[3];
+  try {
+    Book.updateOne(
+      { _id: req.body.bookID },
+      {
+        $pull: { currentlyReading: id, wantToRead: id, read: id },
+      }
+    ).then(() => {
+      res.sendStatus(200);
+    });
+  } catch (err) {
+    return next(err);
+  }
+};

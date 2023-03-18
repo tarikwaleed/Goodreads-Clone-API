@@ -76,8 +76,18 @@ exports.rating_create_post = (req, res, next) => {
       } else {
         rating
           .save()
-          .then(() => {
-            res.json(rating);
+          .then((results) => {
+            console.log(req.body.book);
+            console.log("++++++++++++++++++++++++++++++++++");
+            console.log(results);
+            Book.updateOne(
+              { _id: req.body.book },
+              {
+                $push: { ratings: results._id },
+              }
+            ).then(() => {
+              res.sendStatus(200);
+            });
           })
           .catch((err) => {
             return next(err);
@@ -92,7 +102,10 @@ exports.rating_create_post = (req, res, next) => {
 // Handle rating delete on POST.
 exports.rating_delete = async (req, res, next) => {
   try {
-    Rating.findOneAndRemove(req.params.id)
+    Rating.findOneAndRemove({
+      book: req.body.book,
+      user: req.body.user,
+    })
       .then((results) => {
         if (results.rating == null) {
           // No results.
@@ -104,6 +117,12 @@ exports.rating_delete = async (req, res, next) => {
         // Success - go to author list
         // res.sendStatus(200);
         // res.send("removed");
+        Book.updateOne(
+          { _id: req.body.book },
+          {
+            $pull: { ratings: results._id },
+          }
+        );
         console.log("removed");
         res.sendStatus(200);
       })
@@ -121,7 +140,7 @@ exports.rating_update = async (req, res, next) => {
   try {
     // update Author data
     Rating.findOneAndUpdate(
-      req.body._id,
+      { book: req.body.book, user: req.body.user },
       {
         book: req.body.book,
         user: req.body.user,
@@ -140,11 +159,17 @@ exports.rating_update = async (req, res, next) => {
           err.status = 404;
           return next(err);
         }
+        Book.updateOne(
+          { _id: req.body.book },
+          {
+            $push: { ratings: "12312313123" },
+          }
+        );
         // Success - go to author list
         // res.sendStatus(200);
         // res.send("removed");
         console.log("updated");
-        res.json(results);
+        res.sendStatus(200);
       })
       .catch((err) => {
         return next(err);
