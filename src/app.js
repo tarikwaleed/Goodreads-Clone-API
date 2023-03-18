@@ -5,6 +5,8 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 require("./config/database").connect();
 const cors = require('cors');
+const helmet = require('helmet');
+
 
 var indexRouter = require("./routes/index.route");
 var bookRouter = require("./routes/book.route");
@@ -37,6 +39,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(cors());
+app.use(helmet())
+
 
 app.use("/", indexRouter);
 app.use("/api/book", bookRouter);
