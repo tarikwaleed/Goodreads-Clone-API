@@ -7,9 +7,10 @@ exports.user_books_list = async function (req, res, next) {
   try {
     var results = {};
     results["data"] = [];
+    const id = req.originalUrl.split('/')[3]
 
     await Book.find({
-      read: { $in: [req.params.id] },
+      read: { $in: [id] },
     })
       .exec()
       .then((data) => {
@@ -19,7 +20,7 @@ exports.user_books_list = async function (req, res, next) {
       });
 
     await Book.find({
-      wantToRead: { $in: [req.params.id] },
+      wantToRead: { $in: [id] },
     })
       .exec()
       .then((data) => {
@@ -29,7 +30,7 @@ exports.user_books_list = async function (req, res, next) {
       });
 
     await Book.find({
-      currentlyReading: { $in: [req.params.id] },
+      currentlyReading: { $in: [id] },
     })
       .exec()
       .then((data) => {
@@ -44,14 +45,14 @@ exports.user_books_list = async function (req, res, next) {
       return next(err);
     }
 
-    // Successful, so render.
-    // console.log(results.author);
+    //   // Successful, so render.
+    //   // console.log(results.author);
     res.json(results);
-    // res.render("author_detail", {
-    //   title: "Author Detail",
-    //   author: results.author,
-    //   author_books: results.authors_books,
-    // });
+    //   // res.render("author_detail", {
+    //   //   title: "Author Detail",
+    //   //   author: results.author,
+    //   //   author_books: results.authors_books,
+    //   // });
   } catch (err) {
     return next(err);
   }
@@ -59,8 +60,9 @@ exports.user_books_list = async function (req, res, next) {
 
 // Display list of all Users.
 exports.user_books_currentlyReading_list = function (req, res, next) {
-  console.log(req.params.id);
-  Book.find({ currentlyReading: { $in: [req.params.id] } })
+  console.log(id);
+  const id = req.originalUrl.split('/')[3]
+  Book.find({ currentlyReading: { $in: [id] } })
     .exec()
     .then((list_users) => {
       // console.log(list_users);
@@ -77,7 +79,8 @@ exports.user_books_currentlyReading_list = function (req, res, next) {
 
 // Display list of all Users.
 exports.user_books_wantToRead_list = function (req, res, next) {
-  Book.find({ wantToRead: { $in: [req.params.id] } })
+  const id = req.originalUrl.split('/')[3]
+  Book.find({ wantToRead: { $in: [id] } })
     .exec()
     .then((list_users) => {
       // console.log(list_users);
@@ -94,7 +97,8 @@ exports.user_books_wantToRead_list = function (req, res, next) {
 
 // Display list of all Users.
 exports.user_books_read_list = function (req, res, next) {
-  Book.find({ read: { $in: [req.params.id] } })
+  const id = req.originalUrl.split('/')[3]
+  Book.find({ read: { $in: [id] } })
     .exec()
     .then((list_users) => {
       // console.log(list_users);
@@ -107,4 +111,44 @@ exports.user_books_read_list = function (req, res, next) {
     .catch((err) => {
       return next(err);
     });
+};
+exports.update_user_book = async function (req, res, next) {
+  const id = req.originalUrl.split('/')[3]
+  try {
+    if (req.body.bookStatus == "read") {
+      Book.updateOne(
+        { _id: req.body.bookID },
+        {
+          $pull: { currentlyReading: id, wantToRead: id },
+          $push: { read: id },
+        }
+      ).then(() => {
+        res.sendStatus(200);
+      });
+    }
+    if (req.body.bookStatus == "currentlyReading") {
+      Book.updateOne(
+        { _id: req.body.bookID },
+        {
+          $pull: { read: id, wantToRead: id },
+          $push: { currentlyReading: id },
+        }
+      ).then(() => {
+        res.sendStatus(200);
+      });
+    }
+    if (req.body.bookStatus == "wantToRead") {
+      Book.updateOne(
+        { _id: req.body.bookID },
+        {
+          $pull: { currentlyReading: id, read: req.params.id },
+          $push: { wantToRead: id },
+        }
+      ).then(() => {
+        res.sendStatus(200);
+      });
+    }
+  } catch (err) {
+    return next(err);
+  }
 };

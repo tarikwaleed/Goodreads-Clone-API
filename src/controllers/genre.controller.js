@@ -19,7 +19,7 @@ exports.genre_list = function (req, res, next) {
 };
 
 // Display detail page for a specific Genre.
-exports.genre_detail = async (req, res, next) => {
+exports.genre_details = async (req, res, next) => {
   try {
     var results = {};
     results["genre"] = await Genre.findById(req.params.id).exec();
@@ -143,20 +143,4 @@ exports.genre_update = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
-
-////////////////////not implemented//////////////////////////
-// Display Genre create form on GET.
-exports.genre_create_get = (req, res, next) => {
-  res.render("genre_form", { title: "Create Genre" });
-};
-
-// Display Genre delete form on GET.
-exports.genre_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Genre delete GET");
-};
-
-// Display Genre update form on GET.
-exports.genre_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Genre update GET");
 };
