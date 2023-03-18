@@ -11,7 +11,7 @@ const AuthorSchema = new Schema({
 
 // Virtual for author's full name
 AuthorSchema.virtual("name").get(function () {
-  return this.last_name + ", " + this.first_name;
+  return this.first_name + " " + this.last_name;
 });
 
 // Virtual for author's lifespan

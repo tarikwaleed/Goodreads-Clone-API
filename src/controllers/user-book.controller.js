@@ -1,4 +1,3 @@
-
 const User = require("../models/user.model");
 const Book = require("../models/book.model");
 
@@ -7,49 +6,115 @@ exports.user_books_list = async function (req, res, next) {
   try {
     var results = {};
     results["data"] = [];
-    const id = req.originalUrl.split('/')[3]
+    const id = req.originalUrl.split("/")[3];
     // const id=req.params.user_id
 
     await Book.find({
       read: { $in: [id] },
     })
+      .populate("author")
+      .populate("ratings")
       .exec()
       .then((data) => {
         data.map((element) => {
-          results.data.push(element);
+          authorList = [];
+          UserRating = "";
+          allRatings = 0;
+          for (author of element.author) {
+            authorList.push({
+              authorId: author._id,
+              authorName: author.name,
+            });
+          }
+          for (rating of element.ratings) {
+            if (rating.user == id) {
+              UserRating = rating.rating;
+            }
+            allRatings += rating.rating;
+          }
+          results.data.push({
+            id: element._id,
+            title: element.title,
+            coverImage: element.coverImage,
+            author: authorList,
+            shelf: "read",
+            rating: UserRating,
+            averageRating: allRatings / element.ratings.length,
+          });
         });
       });
 
     await Book.find({
       wantToRead: { $in: [id] },
     })
+      .populate("author")
+      .populate("ratings")
       .exec()
       .then((data) => {
         data.map((element) => {
-          results.data.push(element);
+          authorList = [];
+          UserRating = "";
+          allRatings = 0;
+          for (author of element.author) {
+            authorList.push({
+              authorId: author._id,
+              authorName: author.name,
+            });
+          }
+          for (rating of element.ratings) {
+            if (rating.user == id) {
+              UserRating = rating.rating;
+            }
+            allRatings += rating.rating;
+          }
+          results.data.push({
+            id: element._id,
+            title: element.title,
+            coverImage: element.coverImage,
+            author: authorList,
+            shelf: "wantToRead",
+            rating: UserRating,
+            averageRating: allRatings / element.ratings.length,
+          });
         });
       });
 
     await Book.find({
       currentlyReading: { $in: [id] },
     })
+      .populate("author")
+      .populate("ratings")
       .exec()
       .then((data) => {
         data.map((element) => {
-          results.data.push(element);
+          authorList = [];
+          UserRating = "";
+          allRatings = 0;
+          for (author of element.author) {
+            authorList.push({
+              authorId: author._id,
+              authorName: author.name,
+            });
+          }
+          for (rating of element.ratings) {
+            if (rating.user == id) {
+              UserRating = rating.rating;
+            }
+            allRatings += rating.rating;
+          }
+          results.data.push({
+            id: element._id,
+            title: element.title,
+            coverImage: element.coverImage,
+            author: authorList,
+            shelf: "currentlyReading",
+            rating: UserRating,
+            averageRating: allRatings / element.ratings.length,
+          });
         });
       });
-    results.length = results.data.length
+    results.length = results.data.length;
     res.json(results);
-
-
-    //   // Successful, so render.
-    //   // console.log(results.author);
-    //   // res.render("author_detail", {
-    //   //   title: "Author Detail",
-    //   //   author: results.author,
-    //   //   author_books: results.authors_books,
-    //   // });
   } catch (err) {
     return next(err);
   }
@@ -57,17 +122,44 @@ exports.user_books_list = async function (req, res, next) {
 
 // Display list of all Users.
 exports.user_books_currentlyReading_list = function (req, res, next) {
-  console.log(id);
-  const id = req.originalUrl.split('/')[3]
-  Book.find({ currentlyReading: { $in: [id] } })
+  var results = {};
+  results["data"] = [];
+  const id = req.originalUrl.split("/")[3];
+  Book.find({
+    currentlyReading: { $in: [id] },
+  })
+    .populate("author")
+    .populate("ratings")
     .exec()
-    .then((list_users) => {
-      // console.log(list_users);
-      res.json(list_users);
-      //   res.render("user_list", {
-      //     title: "User List",
-      //     user_list: list_users,
-      //   });
+    .then((data) => {
+      data.map((element) => {
+        authorList = [];
+        UserRating = "";
+        allRatings = 0;
+        for (author of element.author) {
+          authorList.push({
+            authorId: author._id,
+            authorName: author.name,
+          });
+        }
+        for (rating of element.ratings) {
+          if (rating.user == id) {
+            UserRating = rating.rating;
+          }
+          allRatings += rating.rating;
+        }
+        results.data.push({
+          id: element._id,
+          title: element.title,
+          coverImage: element.coverImage,
+          author: authorList,
+          shelf: "currentlyReading",
+          rating: UserRating,
+          averageRating: allRatings / element.ratings.length,
+        });
+      });
+      results.length = results.data.length;
+      res.json(results);
     })
     .catch((err) => {
       return next(err);
@@ -76,16 +168,45 @@ exports.user_books_currentlyReading_list = function (req, res, next) {
 
 // Display list of all Users.
 exports.user_books_wantToRead_list = function (req, res, next) {
-  const id = req.originalUrl.split('/')[3]
-  Book.find({ wantToRead: { $in: [id] } })
+  var results = {};
+  results["data"] = [];
+  const id = req.originalUrl.split("/")[3];
+
+  Book.find({
+    wantToRead: { $in: [id] },
+  })
+    .populate("author")
+    .populate("ratings")
     .exec()
-    .then((list_users) => {
-      // console.log(list_users);
-      res.json(list_users);
-      //   res.render("user_list", {
-      //     title: "User List",
-      //     user_list: list_users,
-      //   });
+    .then((data) => {
+      data.map((element) => {
+        authorList = [];
+        UserRating = "";
+        allRatings = 0;
+        for (author of element.author) {
+          authorList.push({
+            authorId: author._id,
+            authorName: author.name,
+          });
+        }
+        for (rating of element.ratings) {
+          if (rating.user == id) {
+            UserRating = rating.rating;
+          }
+          allRatings += rating.rating;
+        }
+        results.data.push({
+          id: element._id,
+          title: element.title,
+          coverImage: element.coverImage,
+          author: authorList,
+          shelf: "wantToRead",
+          rating: UserRating,
+          averageRating: allRatings / element.ratings.length,
+        });
+      });
+      results.length = results.data.length;
+      res.json(results);
     })
     .catch((err) => {
       return next(err);
@@ -94,23 +215,52 @@ exports.user_books_wantToRead_list = function (req, res, next) {
 
 // Display list of all Users.
 exports.user_books_read_list = function (req, res, next) {
-  const id = req.originalUrl.split('/')[3]
-  Book.find({ read: { $in: [id] } })
+  var results = {};
+  results["data"] = [];
+  const id = req.originalUrl.split("/")[3];
+
+  Book.find({
+    read: { $in: [id] },
+  })
+    .populate("author")
+    .populate("ratings")
     .exec()
-    .then((list_users) => {
-      // console.log(list_users);
-      res.json(list_users);
-      //   res.render("user_list", {
-      //     title: "User List",
-      //     user_list: list_users,
-      //   });
+    .then((data) => {
+      data.map((element) => {
+        authorList = [];
+        UserRating = "";
+        allRatings = 0;
+        for (author of element.author) {
+          authorList.push({
+            authorId: author._id,
+            authorName: author.name,
+          });
+        }
+        for (rating of element.ratings) {
+          if (rating.user == id) {
+            UserRating = rating.rating;
+          }
+          allRatings += rating.rating;
+        }
+        results.data.push({
+          id: element._id,
+          title: element.title,
+          coverImage: element.coverImage,
+          author: authorList,
+          shelf: "read",
+          rating: UserRating,
+          averageRating: allRatings / element.ratings.length,
+        });
+      });
+      results.length = results.data.length;
+      res.json(results);
     })
     .catch((err) => {
       return next(err);
     });
 };
 exports.update_user_book = async function (req, res, next) {
-  const id = req.originalUrl.split('/')[3]
+  const id = req.originalUrl.split("/")[3];
   try {
     if (req.body.bookStatus == "read") {
       Book.updateOne(
@@ -138,7 +288,7 @@ exports.update_user_book = async function (req, res, next) {
       Book.updateOne(
         { _id: req.body.bookID },
         {
-          $pull: { currentlyReading: id, read: req.params.id },
+          $pull: { currentlyReading: id, read: id },
           $push: { wantToRead: id },
         }
       ).then(() => {
