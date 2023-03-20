@@ -77,12 +77,12 @@ exports.book_details = (req, res, next) => {
 exports.book_list = (req, res, next) => {
     Book.find()
         .populate('author')
-        // .populate('genre')
-        // .populate('reviews')
-        // .populate('ratings')
-        // .populate('read')
-        // .populate('currentlyReading')
-        // .populate('wantToRead')
+        .populate('genre')
+        .populate('reviews')
+        .populate('ratings')
+        .populate('read')
+        .populate('currentlyReading')
+        .populate('wantToRead')
         .exec((err, book_list) => {
             if (err) {
                 return next(err);

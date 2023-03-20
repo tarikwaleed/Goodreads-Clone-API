@@ -6,7 +6,7 @@ const auth=require('../middlewares/auth');
 
 
 router.get('/:id', bookController.book_details);
-router.get('/', auth,bookController.book_list);
+router.get('/',bookController.book_list);
 
 module.exports = router;
 
