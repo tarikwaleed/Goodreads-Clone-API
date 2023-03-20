@@ -8,10 +8,6 @@ exports.genre_list = function (req, res, next) {
     .exec()
     .then((list_genre) => {
       res.send(list_genre);
-      //   res.render("genre_list", {
-      //     title: "Genre List",
-      //     genre_list: list_genre,
-      //   });
     })
     .catch((err) => {
       return next(err);
@@ -44,26 +40,20 @@ exports.genre_details = async (req, res, next) => {
   }
 };
 
-// Handle Genre create on POST.
 exports.genre_create_post = (req, res, next) => {
-  // Create a genre object with escaped and trimmed data.
   const genre = new Genre({ name: req.body.name });
 
-  // Data from form is valid.
-  // Check if Genre with same name already exists.
   Genre.findOne({ name: req.body.name })
     .exec()
     .then((found_genre) => {
       if (found_genre) {
-        // Genre exists, redirect to its detail page.
-        // res.redirect(found_genre.url);
-        res.send("already created");
+        res.send("This Genre already exists");
       } else {
         genre
           .save()
           .then(() => {
-            res.sendStatus(200);
-            // res.redirect(genre.url);
+            // res.sendStatus(200);
+            res.status(200).json(genre)
           })
           .catch((err) => {
             return next(err);
@@ -75,36 +65,17 @@ exports.genre_create_post = (req, res, next) => {
     });
 };
 
-// Handle Genre delete on POST.
 exports.genre_delete = async (req, res, next) => {
   try {
     var results = {};
-    results["genre"] = await Genre.findById(req.params.id).exec();
     results["genre_books"] = await Book.find({ genre: req.params.id }).exec();
-
-    if (results.genre == null) {
-      // No results.
-      const err = new Error("Genre not found");
-      err.status = 404;
-      return next(err);
-    }
-
-    // Success
     if (results.genre_books.length > 0) {
-      // Genre has books. Render in same way as for GET route.
-      const err = new Error("There are book that holds that genre");
-      err.status = 404;
-      return next(err);
+      return res.status(409).json({ message: "Cannot delete genre as it has related books." });
     }
 
     Genre.findByIdAndRemove(req.params.id)
       .then((data) => {
-        // Success - go to author list
-        // res.sendStatus(200);
-        // res.send("removed");
-        console.log("removed");
-        //res.redirect(`/genre/genres`);
-        res.sendStatus(200);
+        res.status(200).send(data)
       })
       .catch((err) => {
         return next(err);
@@ -114,28 +85,20 @@ exports.genre_delete = async (req, res, next) => {
   }
 };
 
-// Handle Genre update on POST.
 exports.genre_update = async (req, res, next) => {
   try {
     var results = await Genre.findById(req.params.id).exec();
-
     if (results == null) {
-      // No results.
-      const err = new Error("Genre not found");
-      err.status = 404;
-      return next(err);
+      res.send("genre doesn't exist")
+
     }
 
-    // update Author data
     Genre.findByIdAndUpdate(req.params.id, {
       name: req.body.name,
     })
-      .then(() => {
-        // Success - go to author list
-        // res.sendStatus(200);
-        // res.send("removed");
+      .then((data) => {
         console.log("updated");
-        res.sendStatus(200);
+        res.status(200).json(data)
       })
       .catch((err) => {
         return next(err);
