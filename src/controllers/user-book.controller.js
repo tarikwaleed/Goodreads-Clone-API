@@ -260,36 +260,39 @@ exports.user_books_read_list = function (req, res, next) {
     });
 };
 exports.update_user_book = async function (req, res, next) {
-  const id = req.originalUrl.split("/")[3] || req.body.userID;
+  // const userId = req.originalUrl.split("/")[3] || req.body.userID;
+  const userId = req.body.userId;
+  const bookId = req.body.bookId
+  const bookStatus = req.body.bookStatus
   try {
-    if (req.body.bookStatus == "read") {
+    if (bookStatus == "read") {
       Book.updateOne(
-        { _id: req.body.bookID },
+        { _id: bookId },
         {
-          $pull: { currentlyReading: id, wantToRead: id },
-          $push: { read: id },
+          $pull: { currentlyReading: userId, wantToRead: userId },
+          $push: { read: userId },
         }
       ).then(() => {
         res.sendStatus(200);
       });
     }
-    if (req.body.bookStatus == "currentlyReading") {
+    else if (bookStatus == "currentlyReading") {
       Book.updateOne(
-        { _id: req.body.bookID },
+        { _id: bookId },
         {
-          $pull: { read: id, wantToRead: id },
-          $push: { currentlyReading: id },
+          $pull: { read: userId, wantToRead: userId },
+          $push: { currentlyReading: userId },
         }
       ).then(() => {
         res.sendStatus(200);
       });
     }
-    if (req.body.bookStatus == "wantToRead") {
+    else if (bookStatus == "wantToRead") {
       Book.updateOne(
-        { _id: req.body.bookID },
+        { _userId: bookId },
         {
-          $pull: { currentlyReading: id, read: id },
-          $push: { wantToRead: id },
+          $pull: { currentlyReading: userId, read: userId },
+          $push: { wantToRead: userId },
         }
       ).then(() => {
         res.sendStatus(200);

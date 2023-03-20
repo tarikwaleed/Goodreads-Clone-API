@@ -52,7 +52,7 @@ app.use("/api/genre", genreRouter);
 app.use("/api/rating", ratingRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/user", userRouter);
-app.use("/api/user/:user_id/book", userBookRouter);
+app.use("/api/user/book", userBookRouter);
 app.use("/api/auth", registerationRouter);
 
 // catch 404 and forward to error handler
