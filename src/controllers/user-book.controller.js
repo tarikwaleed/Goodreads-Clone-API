@@ -1,4 +1,3 @@
-const User = require("../models/user.model");
 const Book = require("../models/book.model");
 
 // Display list of all Users.
@@ -6,7 +5,8 @@ exports.user_books_list = async function (req, res, next) {
   try {
     var results = {};
     results["data"] = [];
-    const id = req.originalUrl.split("/")[3];
+    const id = req.body.userId;
+    console.log(id);
     // const id=req.params.user_id
 
     await Book.find({
@@ -262,8 +262,9 @@ exports.user_books_read_list = function (req, res, next) {
 exports.update_user_book = async function (req, res, next) {
   // const userId = req.originalUrl.split("/")[3] || req.body.userID;
   const userId = req.body.userId;
-  const bookId = req.body.bookId
-  const bookStatus = req.body.bookStatus
+  const bookId = req.body.bookId;
+  const bookStatus = req.body.bookStatus;
+  console.log(userId, bookId, bookStatus);
   try {
     if (bookStatus == "r") {
       Book.updateOne(
@@ -275,8 +276,7 @@ exports.update_user_book = async function (req, res, next) {
       ).then(() => {
         res.json("book updated");
       });
-    }
-    else if (bookStatus == "c") {
+    } else if (bookStatus == "c") {
       Book.updateOne(
         { _id: bookId },
         {
@@ -284,18 +284,17 @@ exports.update_user_book = async function (req, res, next) {
           $push: { currentlyReading: userId },
         }
       ).then(() => {
-        res.sendStatus(200);
+        res.json("book updated");
       });
-    }
-    else if (bookStatus == "w") {
+    } else if (bookStatus == "w") {
       Book.updateOne(
-        { _userId: bookId },
+        { _id: bookId },
         {
           $pull: { currentlyReading: userId, read: userId },
           $push: { wantToRead: userId },
         }
       ).then(() => {
-        res.sendStatus(200);
+        res.json("book updated");
       });
     }
   } catch (err) {

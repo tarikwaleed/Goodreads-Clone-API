@@ -4,9 +4,8 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 require("./config/database").connect();
-const cors = require('cors');
-const helmet = require('helmet');
-
+const cors = require("cors");
+const helmet = require("helmet");
 
 var indexRouter = require("./routes/index.route");
 var bookRouter = require("./routes/book.route");
@@ -40,8 +39,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.static(path.join(__dirname, "..", "uploads")));
 app.use(cors());
-app.use(helmet())
-
+app.use(helmet());
 
 app.use("/", indexRouter);
 app.use("/api/book", bookRouter);
@@ -51,8 +49,8 @@ app.use("/api/admin/author", adminAuthorRouter);
 app.use("/api/genre", genreRouter);
 app.use("/api/rating", ratingRouter);
 app.use("/api/review", reviewRouter);
-app.use("/api/user", userRouter);
 app.use("/api/user/book", userBookRouter);
+app.use("/api/user", userRouter);
 app.use("/api/auth", registerationRouter);
 
 // catch 404 and forward to error handler
