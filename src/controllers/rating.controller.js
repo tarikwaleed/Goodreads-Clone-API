@@ -126,7 +126,7 @@ exports.rating_update = async (req, res, next) => {
   try {
     // update Author data
     Rating.findOneAndUpdate(
-      { book: req.body.book, user: req.body.user },
+      { book: req.body.bookID, user: req.body.userID },
       {
         book: req.body.book,
         user: req.body.user,

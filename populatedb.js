@@ -11,7 +11,6 @@ const async = require("async");
 const Book = require("./src/models/book.model");
 const Author = require("./src/models/author.model");
 const Genre = require("./src/models/genre.model");
-const BookInstance = require("./src/models/genre.model");
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false); // Prepare for Mongoose 7
@@ -26,12 +25,12 @@ async function main() {
 const authors = [];
 const genres = [];
 const books = [];
-const bookinstances = [];
 
-function authorCreate(first_name, last_name, d_birth, d_death, cb) {
+function authorCreate(first_name, last_name, d_birth, d_death, photo, cb) {
   authordetail = { first_name: first_name, last_name: last_name };
   if (d_birth != false) authordetail.date_of_birth = d_birth;
   if (d_death != false) authordetail.date_of_death = d_death;
+  if (photo != false) authordetail.photo = photo;
 
   const author = new Author(authordetail);
 
@@ -64,12 +63,30 @@ function genreCreate(name, cb) {
     });
 }
 
-function bookCreate(title, summary, isbn, author, genre, cb) {
+function bookCreate(
+  title,
+  summary,
+  isbn,
+  author,
+  genre,
+  coverImage,
+  reviews,
+  ratings,
+  currentlyReading,
+  wantToRead,
+  read
+) {
   bookdetail = {
     title: title,
     summary: summary,
     author: author,
     isbn: isbn,
+    coverImage: coverImage,
+    reviews: reviews,
+    ratings: ratings,
+    currentlyReading: currentlyReading,
+    wantToRead: wantToRead,
+    read: read,
   };
   if (genre != false) bookdetail.genre = genre;
 
@@ -79,28 +96,6 @@ function bookCreate(title, summary, isbn, author, genre, cb) {
     .then(() => {
       console.log("New Book: " + book);
       books.push(book);
-      cb(null, book);
-    })
-    .catch((err) => {
-      cb(err, null);
-      console.log(err);
-    });
-}
-
-function bookInstanceCreate(book, imprint, due_back, status, cb) {
-  bookinstancedetail = {
-    book: book,
-    imprint: imprint,
-  };
-  if (due_back != false) bookinstancedetail.due_back = due_back;
-  if (status != false) bookinstancedetail.status = status;
-
-  const bookinstance = new BookInstance(bookinstancedetail);
-  bookinstance
-    .save()
-    .then(() => {
-      console.log("New BookInstance: " + bookinstance);
-      bookinstances.push(bookinstance);
       cb(null, book);
     })
     .catch((err) => {
@@ -221,102 +216,6 @@ function createBooks(cb) {
   );
 }
 
-function createBookInstances(cb) {
-  async.parallel(
-    [
-      function (callback) {
-        bookInstanceCreate(
-          books[0],
-          "London Gollancz, 2014.",
-          false,
-          "Available",
-          callback
-        );
-      },
-      function (callback) {
-        bookInstanceCreate(
-          books[1],
-          " Gollancz, 2011.",
-          false,
-          "Loaned",
-          callback
-        );
-      },
-      function (callback) {
-        bookInstanceCreate(
-          books[2],
-          " Gollancz, 2015.",
-          false,
-          false,
-          callback
-        );
-      },
-      function (callback) {
-        bookInstanceCreate(
-          books[3],
-          "New York Tom Doherty Associates, 2016.",
-          false,
-          "Available",
-          callback
-        );
-      },
-      function (callback) {
-        bookInstanceCreate(
-          books[3],
-          "New York Tom Doherty Associates, 2016.",
-          false,
-          "Available",
-          callback
-        );
-      },
-      function (callback) {
-        bookInstanceCreate(
-          books[3],
-          "New York Tom Doherty Associates, 2016.",
-          false,
-          "Available",
-          callback
-        );
-      },
-      function (callback) {
-        bookInstanceCreate(
-          books[4],
-          "New York, NY Tom Doherty Associates, LLC, 2015.",
-          false,
-          "Available",
-          callback
-        );
-      },
-      function (callback) {
-        bookInstanceCreate(
-          books[4],
-          "New York, NY Tom Doherty Associates, LLC, 2015.",
-          false,
-          "Maintenance",
-          callback
-        );
-      },
-      function (callback) {
-        bookInstanceCreate(
-          books[4],
-          "New York, NY Tom Doherty Associates, LLC, 2015.",
-          false,
-          "Loaned",
-          callback
-        );
-      },
-      function (callback) {
-        bookInstanceCreate(books[0], "Imprint XXX2", false, false, callback);
-      },
-      function (callback) {
-        bookInstanceCreate(books[1], "Imprint XXX3", false, false, callback);
-      },
-    ],
-    // Optional callback
-    cb
-  );
-}
-
 async.series(
   [createGenreAuthors],
   // Optional callback
@@ -324,7 +223,6 @@ async.series(
     if (err) {
       console.log("FINAL ERR: " + err);
     } else {
-      console.log("BOOKInstances: " + bookinstances);
     }
     // All done, disconnect from database
     mongoose.connection.close();
