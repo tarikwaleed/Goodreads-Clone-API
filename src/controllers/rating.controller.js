@@ -54,39 +54,30 @@ exports.rating_detail = async (req, res, next) => {
   }
 };
 
-// Handle rating create on POST.
-exports.rating_create_post = (req, res, next) => {
-  // Create a rating object with escaped and trimmed data.
+exports.rating_create = (req, res, next) => {
   const rating = new Rating({
-    book: req.body.book,
-    user: req.body.user,
+    book: req.body.bookID,
+    user: req.body.userID,
     rating: req.body.rating,
   });
 
-  // Data from form is valid.
-  // Check if rating with same name already exists.
-  Rating.findOne({ book: req.body.book, user: req.body.user })
+  Rating.findOne({ book: req.body.bookID, user: req.body.userID })
     .exec()
     .then((found_rating) => {
       if (found_rating) {
-        // rating exists, redirect to its detail page.
-        //res.redirect(303, `/${found_rating._id}`);
         req.body._id = found_rating._id;
         return exports.rating_update(req, res, next);
       } else {
         rating
           .save()
           .then((results) => {
-            console.log(req.body.book);
-            console.log("++++++++++++++++++++++++++++++++++");
-            console.log(results);
             Book.updateOne(
-              { _id: req.body.book },
+              { _id: req.body.bookID },
               {
                 $push: { ratings: results._id },
               }
             ).then(() => {
-              res.sendStatus(200);
+              res.json(results);
             });
           })
           .catch((err) => {
@@ -99,7 +90,6 @@ exports.rating_create_post = (req, res, next) => {
     });
 };
 
-// Handle rating delete on POST.
 exports.rating_delete = async (req, res, next) => {
   try {
     Rating.findOneAndRemove({
@@ -108,15 +98,11 @@ exports.rating_delete = async (req, res, next) => {
     })
       .then((results) => {
         if (results.rating == null) {
-          // No results.
           const err = new Error("rating not found");
           err.status = 404;
           return next(err);
         }
 
-        // Success - go to author list
-        // res.sendStatus(200);
-        // res.send("removed");
         Book.updateOne(
           { _id: req.body.book },
           {
@@ -177,20 +163,4 @@ exports.rating_update = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
-
-////////////////////not implemented//////////////////////////
-// Display rating create form on GET.
-exports.rating_create_get = (req, res, next) => {
-  res.render("rating_form", { title: "Create rating" });
-};
-
-// Display rating delete form on GET.
-exports.rating_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: rating delete GET");
-};
-
-// Display rating update form on GET.
-exports.rating_update_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: rating update GET");
 };
