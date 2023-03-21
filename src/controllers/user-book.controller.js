@@ -265,7 +265,7 @@ exports.update_user_book = async function (req, res, next) {
   const bookId = req.body.bookId
   const bookStatus = req.body.bookStatus
   try {
-    if (bookStatus == "read") {
+    if (bookStatus == "r") {
       Book.updateOne(
         { _id: bookId },
         {
@@ -273,10 +273,10 @@ exports.update_user_book = async function (req, res, next) {
           $push: { read: userId },
         }
       ).then(() => {
-        res.sendStatus(200);
+        res.json("book updated");
       });
     }
-    else if (bookStatus == "currentlyReading") {
+    else if (bookStatus == "c") {
       Book.updateOne(
         { _id: bookId },
         {
@@ -287,7 +287,7 @@ exports.update_user_book = async function (req, res, next) {
         res.sendStatus(200);
       });
     }
-    else if (bookStatus == "wantToRead") {
+    else if (bookStatus == "w") {
       Book.updateOne(
         { _userId: bookId },
         {
