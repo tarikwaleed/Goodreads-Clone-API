@@ -3,7 +3,10 @@ const router = express.Router();
 const review_controller = require("../controllers/review.controller");
 
 // GET request for list of all review.
-router.get("/reviews", review_controller.review_list);
+router.get("/", review_controller.review_list);
+
+//POST request for creating review.
+router.post("/create", review_controller.review_create_post);
 
 // GET request for one review.
 router.get("/:id", review_controller.review_detail);
@@ -12,10 +15,7 @@ router.get("/:id", review_controller.review_detail);
 router.put("/:id", review_controller.review_update);
 
 // POST request to delete review.
-router.delete("/:id", review_controller.review_delete);
-
-//POST request for creating review.
-router.post("/create", review_controller.review_create_post);
+router.delete("/", review_controller.review_delete);
 
 /////not implemented
 // GET request for creating a review. NOTE This must come before route that displays review (uses id).

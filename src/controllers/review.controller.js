@@ -4,39 +4,31 @@ const { body, validationResult } = require("express-validator");
 
 // Display list of all review.
 exports.review_list = async function (req, res, next) {
+  bookId = req.body.bookId || req.query.bookId;
+  console.log(bookId);
+  var results = {};
+  results["data"] = [];
   try {
-    Review.find()
+    await Review.find({ book: "64080c8b76b43310191437d9" })
+      .populate("user")
       .exec()
       .then((list_review) => {
-        // console.log(list_authors);
-        res.send(list_review);
-        //   res.render("author_list", {
-        //     title: "Author List",
-        //     author_list: list_authors,
-        //   });
+        list_review.forEach((review) => {
+          results.data.push({
+            id: review._id,
+            bookId: review.book,
+            userId: review.user["_id"],
+            userName: review.user.username,
+            userEmail: review.user.email,
+            review: list_review.review,
+          });
+        });
       })
       .catch((err) => {
         return next(err);
       });
-
-    // var results = {};
-    // // results["review"] = await review.findById(req.params.id).exec();
-    // // results["review_books"] = await Book.find({ review: req.params.id }).exec();
-    // results["review"] = await Review.countDocuments({ book: req.body.book });
-    // if (results.review == null) {
-    //   // No results.
-    //   const err = new Error("review not found");
-    //   err.status = 404;
-    //   return next(err);
-    // }
-
-    // res.json(results.review);
-    // // Successful, so render
-    // // res.render("review_detail", {
-    // //   title: "review Detail",
-    // //   review: results.review,
-    // //   review_books: results.review_books,
-    // // });
+    results.length = results.data.length;
+    res.json(results);
   } catch (err) {
     return next(err);
   }
@@ -73,14 +65,14 @@ exports.review_detail = async (req, res, next) => {
 exports.review_create_post = (req, res, next) => {
   // Create a review object with escaped and trimmed data.
   const review = new Review({
-    book: req.body.book,
-    user: req.body.user,
+    book: req.body.bookId,
+    user: req.body.userId,
     review: req.body.review,
   });
 
   // Data from form is valid.
   // Check if review with same name already exists.
-  Review.findOne({ book: req.body.book, user: req.body.user })
+  Review.findOne({ book: req.body.bookId, user: req.body.userId })
     .exec()
     .then((found_review) => {
       if (found_review) {
@@ -106,15 +98,17 @@ exports.review_create_post = (req, res, next) => {
 
 // Handle review delete on POST.
 exports.review_delete = async (req, res, next) => {
+  console.log("asdasdas");
+  var reviewId = req.body.reviewId || req.query.reviewId;
   try {
-    Review.findOneAndRemove(req.params.id)
+    Review.deleteOne({ _id: reviewId })
       .then((results) => {
-        if (results.review == null) {
-          // No results.
-          const err = new Error("review not found");
-          err.status = 404;
-          return next(err);
-        }
+        // if (results.review == null) {
+        //   // No results.
+        //   const err = new Error("review not found");
+        //   err.status = 404;
+        //   return next(err);
+        // }
 
         // Success - go to author list
         // res.sendStatus(200);
