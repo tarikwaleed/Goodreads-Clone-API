@@ -1,23 +1,176 @@
 const Book = require("../models/book.model");
 
-// Display list of all Users.
 exports.user_books_list = async function (req, res, next) {
   try {
     var results = {};
     results["data"] = [];
-    const id = req.body.userId;
-    console.log(id);
+    const userid = req.query.userId;
+
+    await Book.find({
+      read: { $in: [userid] },
+    })
+      .populate("author")
+      .populate("genre")
+      .populate("ratings")
+      .exec()
+      .then((data) => {
+        data.map((element) => {
+          authorList = [];
+          genreList = [];
+          UserRating = "";
+          allRatings = 0;
+          for (author of element.author) {
+            authorList.push({
+              authorId: author._id,
+              authorName: author.name,
+            });
+          }
+          for (genre of element.genre) {
+            genreList.push({
+              genreName: genre.name,
+            });
+          }
+          for (rating of element.ratings) {
+            if (rating.user == userid) {
+              UserRating = rating.rating;
+              break;
+            }
+            // allRatings += rating.rating;
+          }
+          results.data.push({
+            id: element._id,
+            title: element.title,
+            coverImage: element.coverImage,
+            author: authorList,
+            genre: genreList,
+            shelf: "r",
+            rating: UserRating,
+            averageRating: element.averageRating,
+            numOfRatings: element.ratings.length,
+            // averageRating: allRatings / element.ratings.length,
+          });
+        });
+      });
+
+    await Book.find({
+      wantToRead: { $in: [userid] },
+    })
+      .populate("author")
+      .populate("genre")
+      .populate("ratings")
+      .exec()
+      .then((data) => {
+        data.map((element) => {
+          authorList = [];
+          genreList = [];
+          UserRating = "";
+          allRatings = 0;
+          for (author of element.author) {
+            authorList.push({
+              authorId: author._id,
+              authorName: author.name,
+            });
+          }
+          for (genre of element.genre) {
+            genreList.push({
+              genreName: genre.name,
+            });
+          }
+          for (rating of element.ratings) {
+            if (rating.user == userid) {
+              UserRating = rating.rating;
+              break;
+            }
+            // allRatings += rating.rating;
+          }
+          results.data.push({
+            id: element._id,
+            title: element.title,
+            coverImage: element.coverImage,
+            author: authorList,
+            genre: genreList,
+            shelf: "w",
+            rating: UserRating,
+            averageRating: element.averageRating,
+            numOfRatings: element.ratings.length,
+            // averageRating: allRatings / element.ratings.length,
+          });
+        });
+      });
+
+    await Book.find({
+      currentlyReading: { $in: [userid] },
+    })
+      .populate("author")
+      .populate("genre")
+      .populate("ratings")
+      .exec()
+      .then((data) => {
+        data.map((element) => {
+          authorList = [];
+          genreList = [];
+          UserRating = "";
+          allRatings = 0;
+          for (author of element.author) {
+            authorList.push({
+              authorId: author._id,
+              authorName: author.name,
+            });
+          }
+          for (genre of element.genre) {
+            genreList.push({
+              genreName: genre.name,
+            });
+          }
+          for (rating of element.ratings) {
+            if (rating.user == userid) {
+              UserRating = rating.rating;
+              break;
+            }
+            // allRatings += rating.rating;
+          }
+          results.data.push({
+            id: element._id,
+            title: element.title,
+            coverImage: element.coverImage,
+            author: authorList,
+            genre: genreList,
+            shelf: "c",
+            rating: UserRating,
+            averageRating: element.averageRating,
+            numOfRatings: element.ratings.length,
+            // averageRating: allRatings / element.ratings.length,
+          });
+        });
+      });
+    results.length = results.data.length;
+    res.json(results);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.user_book_details = async function (req, res, next) {
+  try {
+    var results = {};
+    results["data"] = [];
+    const userid = req.query.userId;
+    const bookid = req.query.bookId;
+
     // const id=req.params.user_id
 
     await Book.find({
-      read: { $in: [id] },
+      _id: bookid,
+      read: { $in: [userid] },
     })
       .populate("author")
+      .populate("genre")
       .populate("ratings")
       .exec()
       .then((data) => {
         data.map((element) => {
           authorList = [];
+          genreList = [];
           UserRating = "";
           allRatings = 0;
           for (author of element.author) {
@@ -26,33 +179,45 @@ exports.user_books_list = async function (req, res, next) {
               authorName: author.name,
             });
           }
+          for (genre of element.genre) {
+            genreList.push({
+              genreName: genre.name,
+            });
+          }
           for (rating of element.ratings) {
-            if (rating.user == id) {
+            if (rating.user == userid) {
               UserRating = rating.rating;
+              break;
             }
-            allRatings += rating.rating;
+            // allRatings += rating.rating;
           }
           results.data.push({
             id: element._id,
             title: element.title,
             coverImage: element.coverImage,
             author: authorList,
-            shelf: "read",
+            genre: genreList,
+            shelf: "r",
             rating: UserRating,
-            averageRating: allRatings / element.ratings.length,
+            averageRating: element.averageRating,
+            numOfRatings: element.ratings.length,
+            // averageRating: allRatings / element.ratings.length,
           });
         });
       });
 
     await Book.find({
-      wantToRead: { $in: [id] },
+      _id: bookid,
+      wantToRead: { $in: [userid] },
     })
       .populate("author")
+      .populate("genre")
       .populate("ratings")
       .exec()
       .then((data) => {
         data.map((element) => {
           authorList = [];
+          genreList = [];
           UserRating = "";
           allRatings = 0;
           for (author of element.author) {
@@ -61,33 +226,45 @@ exports.user_books_list = async function (req, res, next) {
               authorName: author.name,
             });
           }
+          for (genre of element.genre) {
+            genreList.push({
+              genreName: genre.name,
+            });
+          }
           for (rating of element.ratings) {
-            if (rating.user == id) {
+            if (rating.user == userid) {
               UserRating = rating.rating;
+              break;
             }
-            allRatings += rating.rating;
+            // allRatings += rating.rating;
           }
           results.data.push({
             id: element._id,
             title: element.title,
             coverImage: element.coverImage,
             author: authorList,
-            shelf: "wantToRead",
+            genre: genreList,
+            shelf: "w",
             rating: UserRating,
-            averageRating: allRatings / element.ratings.length,
+            averageRating: element.averageRating,
+            numOfRatings: element.ratings.length,
+            // averageRating: allRatings / element.ratings.length,
           });
         });
       });
 
     await Book.find({
-      currentlyReading: { $in: [id] },
+      _id: bookid,
+      currentlyReading: { $in: [userid] },
     })
       .populate("author")
+      .populate("genre")
       .populate("ratings")
       .exec()
       .then((data) => {
         data.map((element) => {
           authorList = [];
+          genreList = [];
           UserRating = "";
           allRatings = 0;
           for (author of element.author) {
@@ -96,20 +273,29 @@ exports.user_books_list = async function (req, res, next) {
               authorName: author.name,
             });
           }
+          for (genre of element.genre) {
+            genreList.push({
+              genreName: genre.name,
+            });
+          }
           for (rating of element.ratings) {
-            if (rating.user == id) {
+            if (rating.user == userid) {
               UserRating = rating.rating;
+              break;
             }
-            allRatings += rating.rating;
+            // allRatings += rating.rating;
           }
           results.data.push({
             id: element._id,
             title: element.title,
             coverImage: element.coverImage,
             author: authorList,
-            shelf: "currentlyReading",
+            genre: genreList,
+            shelf: "c",
             rating: UserRating,
-            averageRating: allRatings / element.ratings.length,
+            averageRating: element.averageRating,
+            numOfRatings: element.ratings.length,
+            // averageRating: allRatings / element.ratings.length,
           });
         });
       });

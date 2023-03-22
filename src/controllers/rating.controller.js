@@ -8,7 +8,9 @@ exports.rating_list = async function (req, res, next) {
     var results = {};
     // results["rating"] = await rating.findById(req.params.id).exec();
     // results["rating_books"] = await Book.find({ rating: req.params.id }).exec();
-    results["rating"] = await Rating.countDocuments({ book: req.body.book });
+    // results["rating"] = await Rating.countDocuments({ book: req.body.book });
+    results["rating"] = await Rating.find({ book: req.body.book });
+    // results["rating"] = await Rating.find({});
     if (results.rating == null) {
       // No results.
       const err = new Error("rating not found");

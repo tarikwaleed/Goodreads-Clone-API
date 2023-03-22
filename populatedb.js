@@ -79,16 +79,16 @@ function bookCreate(
   bookdetail = {
     title: title,
     summary: summary,
-    author: author,
     isbn: isbn,
-    coverImage: coverImage,
-    reviews: reviews,
-    ratings: ratings,
-    currentlyReading: currentlyReading,
-    wantToRead: wantToRead,
-    read: read,
+    author: author,
   };
   if (genre != false) bookdetail.genre = genre;
+  if (coverImage != false) bookdetail.coverImage = coverImage;
+  if (reviews != false) bookdetail.reviews = reviews;
+  if (ratings != false) bookdetail.ratings = ratings;
+  if (currentlyReading != false) bookdetail.currentlyReading = currentlyReading;
+  if (wantToRead != false) bookdetail.wantToRead = wantToRead;
+  if (read != false) bookdetail.read = read;
 
   const book = new Book(bookdetail);
   book
