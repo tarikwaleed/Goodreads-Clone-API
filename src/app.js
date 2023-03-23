@@ -42,13 +42,13 @@ app.use(cors());
 app.use(helmet());
 
 app.use("/", indexRouter);
+app.use("/api/book/review", reviewRouter);
 app.use("/api/book", bookRouter);
 app.use("/api/admin/book", adminBookRouter);
 app.use("/api/author", authorRouter);
 app.use("/api/admin/author", adminAuthorRouter);
 app.use("/api/genre", genreRouter);
 app.use("/api/rating", ratingRouter);
-app.use("/api/review", reviewRouter);
 app.use("/api/user/book", userBookRouter);
 app.use("/api/user", userRouter);
 app.use("/api/auth", registerationRouter);

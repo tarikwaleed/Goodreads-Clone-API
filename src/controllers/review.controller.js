@@ -4,39 +4,22 @@ const { body, validationResult } = require("express-validator");
 
 // Display list of all review.
 exports.review_list = async function (req, res, next) {
+  const bookId = req.query.bookId
+  const filter = { book: bookId }
+  let results = {}
+
+
   try {
-    Review.find()
+    Review.find(filter)
       .exec()
-      .then((list_review) => {
-        // console.log(list_authors);
-        res.send(list_review);
-        //   res.render("author_list", {
-        //     title: "Author List",
-        //     author_list: list_authors,
-        //   });
+      .then((reviews) => {
+        results['length'] = reviews.length
+        results['data'] = reviews
+        res.send(results);
       })
       .catch((err) => {
         return next(err);
       });
-
-    // var results = {};
-    // // results["review"] = await review.findById(req.params.id).exec();
-    // // results["review_books"] = await Book.find({ review: req.params.id }).exec();
-    // results["review"] = await Review.countDocuments({ book: req.body.book });
-    // if (results.review == null) {
-    //   // No results.
-    //   const err = new Error("review not found");
-    //   err.status = 404;
-    //   return next(err);
-    // }
-
-    // res.json(results.review);
-    // // Successful, so render
-    // // res.render("review_detail", {
-    // //   title: "review Detail",
-    // //   review: results.review,
-    // //   review_books: results.review_books,
-    // // });
   } catch (err) {
     return next(err);
   }
@@ -69,23 +52,18 @@ exports.review_detail = async (req, res, next) => {
   }
 };
 
-// Handle review create on POST.
 exports.review_create_post = (req, res, next) => {
   // Create a review object with escaped and trimmed data.
   const review = new Review({
-    book: req.body.book,
-    user: req.body.user,
+    book: req.body.bookId,
+    user: req.body.userId,
     review: req.body.review,
   });
 
-  // Data from form is valid.
-  // Check if review with same name already exists.
   Review.findOne({ book: req.body.book, user: req.body.user })
     .exec()
     .then((found_review) => {
       if (found_review) {
-        // review exists, redirect to its detail page.
-        //res.redirect(303, `/${found_review._id}`);
         req.body._id = found_review._id;
         return exports.review_update(req, res, next);
       } else {

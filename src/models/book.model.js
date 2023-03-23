@@ -15,17 +15,20 @@ const BookSchema = new Schema({
   read: [{ type: Schema.Types.ObjectId, ref: "User" }],
 });
 
-BookSchema.virtual("averageRating").get(function () {
-  const ratings = this.ratings.map((r) => r.rating);
-  if (ratings.length > 0) {
-    const sum = ratings.reduce((a, b) => a + b);
-    return sum / ratings.length;
-    // return (sum / ratings.length).toFixed(1);
+BookSchema.virtual('averageRating').get(function () {
+  if (this.ratings.length === 0) {
+    return 0;
+  } else {
+    const sum = this.ratings.reduce((acc, rating) => acc + rating.rating, 0);
+    return sum / this.ratings.length;
   }
-  return 0;
 });
-BookSchema.virtual("ratingCount").get(function () {
-  return this.ratings.length;
+BookSchema.virtual('ratingCount', {
+  ref: 'Rating',
+  localField: '_id',
+  foreignField: 'book',
+  count: true
 });
+
 
 module.exports = mongoose.model("Book", BookSchema);

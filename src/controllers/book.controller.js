@@ -56,19 +56,19 @@ exports.book_details = (req, res, next) => {
     .populate("genre")
     // .populate('reviews')
     // .populate('ratings')
-    // .populate('averageRating')
-    // .populate('ratingCount')
-    .exec((err, book) => {
-      if (err) {
-        return next(err);
-      }
-      if (book == null) {
-        const err = new Error("Book not found");
-        err.status = 404;
-        return next(err);
-      }
-      res.json(book);
-    });
+    .populate('ratingCount')
+    .populate({
+      path: 'ratings',
+      select: 'rating',
+    })
+    .exec().then(book => {
+      const bookObject = book.toObject();
+      bookObject.ratingCount = book.ratingCount;
+      res.send(bookObject);
+    })
+
+
+
 };
 
 exports.popular_book_list = (req, res, next) => {

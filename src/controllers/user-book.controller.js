@@ -156,6 +156,8 @@ exports.user_book_details = async function (req, res, next) {
     results["data"] = [];
     const userid = req.query.userId;
     const bookid = req.query.bookId;
+    console.log(userid);
+    console.log(bookid);
 
     // const id=req.params.user_id
 
@@ -189,7 +191,7 @@ exports.user_book_details = async function (req, res, next) {
               UserRating = rating.rating;
               break;
             }
-            // allRatings += rating.rating;
+            allRatings += rating.rating;
           }
           results.data.push({
             id: element._id,
@@ -201,7 +203,7 @@ exports.user_book_details = async function (req, res, next) {
             rating: UserRating,
             averageRating: element.averageRating,
             numOfRatings: element.ratings.length,
-            // averageRating: allRatings / element.ratings.length,
+            averageRating: allRatings / element.ratings.length,
           });
         });
       });
@@ -236,7 +238,7 @@ exports.user_book_details = async function (req, res, next) {
               UserRating = rating.rating;
               break;
             }
-            // allRatings += rating.rating;
+            allRatings += rating.rating;
           }
           results.data.push({
             id: element._id,
@@ -248,7 +250,7 @@ exports.user_book_details = async function (req, res, next) {
             rating: UserRating,
             averageRating: element.averageRating,
             numOfRatings: element.ratings.length,
-            // averageRating: allRatings / element.ratings.length,
+            averageRating: allRatings / element.ratings.length,
           });
         });
       });
@@ -283,7 +285,7 @@ exports.user_book_details = async function (req, res, next) {
               UserRating = rating.rating;
               break;
             }
-            // allRatings += rating.rating;
+            allRatings += rating.rating;
           }
           results.data.push({
             id: element._id,
@@ -295,7 +297,7 @@ exports.user_book_details = async function (req, res, next) {
             rating: UserRating,
             averageRating: element.averageRating,
             numOfRatings: element.ratings.length,
-            // averageRating: allRatings / element.ratings.length,
+            averageRating: allRatings / element.ratings.length,
           });
         });
       });
