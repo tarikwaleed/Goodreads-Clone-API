@@ -60,7 +60,9 @@ exports.review_create_post = (req, res, next) => {
     review: req.body.review,
   });
 
-  Review.findOne({ book: req.body.book, user: req.body.user })
+  // Data from form is valid.
+  // Check if review with same name already exists.
+  Review.findOne({ book: req.body.bookId, user: req.body.userId })
     .exec()
     .then((found_review) => {
       if (found_review) {
@@ -84,15 +86,17 @@ exports.review_create_post = (req, res, next) => {
 
 // Handle review delete on POST.
 exports.review_delete = async (req, res, next) => {
+  console.log("asdasdas");
+  var reviewId = req.body.reviewId || req.query.reviewId;
   try {
-    Review.findOneAndRemove(req.params.id)
+    Review.deleteOne({ _id: reviewId })
       .then((results) => {
-        if (results.review == null) {
-          // No results.
-          const err = new Error("review not found");
-          err.status = 404;
-          return next(err);
-        }
+        // if (results.review == null) {
+        //   // No results.
+        //   const err = new Error("review not found");
+        //   err.status = 404;
+        //   return next(err);
+        // }
 
         // Success - go to author list
         // res.sendStatus(200);
