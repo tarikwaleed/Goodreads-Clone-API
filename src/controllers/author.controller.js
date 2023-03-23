@@ -1,31 +1,75 @@
 const Author = require("../models/author.model");
 const Book = require("../models/book.model");
 
-exports.authors_list = function (req, res, next) {
-  Author.find()
+exports.authors_list = async function (req, res, next) {
+  var results = [];
+  var authorAndBooks = {};
+  await Author.find()
     .sort([["last_name", "ascending"]])
     .exec()
-    .then((list_authors) => {
-      // console.log(list_authors);
-      res.json(list_authors);
-      //   res.render("author_list", {
-      //     title: "Author List",
-      //     author_list: list_authors,
-      //   });
-    })
-    .catch((err) => {
-      return next(err);
+    .then(async (authors) => {
+      for (author of authors) {
+        // console.log(author.first_name);
+        authorAndBooks["author"] = author;
+        authorAndBooks["authors_books"] = [];
+        authorID = author._id;
+        // console.log(typeof authorID);
+        await Book.find({ author: authorID })
+          .populate("author")
+          .populate("ratings")
+          .exec()
+          .then((books) => {
+            // console.log(books);
+            for (book of books) {
+              authorAndBooks["authors_books"].push({
+                _id: book._id,
+                title: book.title,
+                summary: book.summary,
+                isbn: book.isbn,
+                coverImage: book.coverImage,
+                avgrating: book.averageRating || 0,
+              });
+            }
+
+            // console.log("ggggggggggggggggggggggggggggggg");
+            // res.json(authorAndBooks);
+          });
+        results.push({
+          author: authorAndBooks["author"],
+          authors_books: authorAndBooks["authors_books"],
+        });
+        console.log(authorAndBooks);
+      }
     });
+  // console.log(authorAndBooks["authors_books"]);
+  res.json(results);
 };
 
 exports.author_details = async (req, res, next) => {
   try {
     var results = {};
     results["author"] = await Author.findById(req.params.id).exec();
-    results["authors_books"] = await Book.find(
-      { author: req.params.id },
-      "title summary"
-    ).exec();
+    results["authors_books"] = [];
+    await Book.find(
+      { author: req.params.id }
+      // "title summary"
+    )
+      .populate("ratings")
+      .exec()
+      .then((books) => {
+        for (book of books) {
+          results["authors_books"].push({
+            _id: book._id,
+            title: book.title,
+            summary: book.summary,
+            isbn: book.isbn,
+            coverImage: book.coverImage,
+            avgrating: book.averageRating || 0,
+          });
+        }
+
+        // results["authors_books"]
+      });
 
     if (results.author == null) {
       const err = new Error("Author not found");
@@ -35,7 +79,7 @@ exports.author_details = async (req, res, next) => {
 
     // Successful, so render.
     // console.log(results.author);
-    res.json(results.author);
+    res.json(results);
     // res.render("author_detail", {
     //   title: "Author Detail",
     //   author: results.author,
