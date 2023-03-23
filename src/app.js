@@ -42,8 +42,8 @@ app.use(cors());
 app.use(helmet());
 
 app.use("/", indexRouter);
-app.use("/api/book/review", reviewRouter);
 app.use("/api/book", bookRouter);
+app.use("/api/book-review", reviewRouter);
 app.use("/api/admin/book", adminBookRouter);
 app.use("/api/author", authorRouter);
 app.use("/api/admin/author", adminAuthorRouter);

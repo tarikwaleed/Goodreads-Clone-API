@@ -10,7 +10,7 @@ exports.review_list = async function (req, res, next) {
 
 
   try {
-    Review.find(filter)
+    Review.find(filter).populate('user')
       .exec()
       .then((reviews) => {
         results['length'] = reviews.length
