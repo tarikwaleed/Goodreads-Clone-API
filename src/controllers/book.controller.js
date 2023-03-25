@@ -20,9 +20,12 @@ exports.book_create = (req, res, next) => {
   });
 };
 exports.book_update = function (req, res) {
-  req.body.coverImage = req.file.path;
+  console.log(req.body._id)
+  if (req.file) {
+    req.body.coverImage = req.file.path
+  }
   Book.findByIdAndUpdate(
-    req.params.id,
+    req.body._id,
     { $set: req.body },
     { new: true },
     function (err, book) {

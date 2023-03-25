@@ -9,17 +9,14 @@ exports.authors_list = async function (req, res, next) {
     .exec()
     .then(async (authors) => {
       for (author of authors) {
-        // console.log(author.first_name);
         authorAndBooks["author"] = author;
         authorAndBooks["authors_books"] = [];
         authorID = author._id;
-        // console.log(typeof authorID);
         await Book.find({ author: authorID })
           .populate("author")
           .populate("ratings")
           .exec()
           .then((books) => {
-            // console.log(books);
             for (book of books) {
               authorAndBooks["authors_books"].push({
                 _id: book._id,
@@ -31,17 +28,14 @@ exports.authors_list = async function (req, res, next) {
               });
             }
 
-            // console.log("ggggggggggggggggggggggggggggggg");
             // res.json(authorAndBooks);
           });
         results.push({
           author: authorAndBooks["author"],
           authors_books: authorAndBooks["authors_books"],
         });
-        console.log(authorAndBooks);
       }
     });
-  // console.log(authorAndBooks["authors_books"]);
   res.json(results);
 };
 
@@ -78,7 +72,6 @@ exports.author_details = async (req, res, next) => {
     }
 
     // Successful, so render.
-    // console.log(results.author);
     res.json(results);
     // res.render("author_detail", {
     //   title: "Author Detail",
