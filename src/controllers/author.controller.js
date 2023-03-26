@@ -84,19 +84,18 @@ exports.author_details = async (req, res, next) => {
 };
 
 exports.author_create = (req, res, next) => {
+  const first_name = req.body.authorName.split(" ")[0]
+  const last_name = req.body.authorName.split(" ")[1]
   const author = new Author({
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    date_of_birth: req.body.date_of_birth,
-    date_of_death: req.body.date_of_death,
-    photo: req.body.photo,
+    first_name: first_name,
+    last_name: last_name,
+    date_of_birth: req.body.dateOfBirth,
+    photo: req.file.path,
   });
   author
     .save()
     .then((data) => {
-      // res.json(data);
-      // res.sendStatus(200);
-      res.sendStatus(200);
+      res.status(200).json(data)
     })
     .catch((err) => {
       return next(err);
