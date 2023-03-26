@@ -123,8 +123,7 @@ exports.author_delete = async (req, res, next) => {
     }
     Author.findByIdAndRemove(req.params.id)
       .then((data) => {
-        console.log("removed");
-        res.redirect("/author/authors");
+        res.send(data)
       })
       .catch((err) => {
         return next(err);
