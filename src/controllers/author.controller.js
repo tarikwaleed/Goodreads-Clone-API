@@ -101,60 +101,37 @@ exports.author_create = (req, res, next) => {
       return next(err);
     });
 };
+exports.author_update = async (req, res,next) => {
+  if (req.file) {
+    req.body.coverImage = req.file.path
+  }
+
+  Author.findByIdAndUpdate(
+    req.body._id,
+    { $set: req.body },
+    { new: true },
+    function (err, author) {
+      if (err) return next(err);
+      res.status(200).json(author);
+    }
+  )
+};
 
 exports.author_delete = async (req, res, next) => {
   try {
     var results = {};
-    results["author"] = await Author.findById(req.params.id).exec();
     results["authors_books"] = await Book.find({
       author: req.params.id,
     }).exec();
 
-    if (results.author == null) {
-      const err = new Error("Author not found");
-      err.status = 404;
-      return next(err);
-    }
     if (results.authors_books.length > 0) {
       const err = new Error("There are book that holds author name");
-      err.status = 404;
+      err.status = 409;
       return next(err);
     }
     Author.findByIdAndRemove(req.params.id)
       .then((data) => {
         res.send(data)
-      })
-      .catch((err) => {
-        return next(err);
-      });
-  } catch (err) {
-    return next(err);
-  }
-};
-
-exports.author_update = async (req, res, next) => {
-  try {
-    var results = await Author.findById(req.params.id).exec();
-
-    if (results == null) {
-      // No results.
-      const err = new Error("Author not found");
-      err.status = 404;
-      return next(err);
-    }
-
-    // update Author data
-    Author.findByIdAndUpdate(req.params.id, {
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      date_of_birth: req.body.date_of_birth,
-      date_of_death: req.body.date_of_death,
-    })
-      .then(() => {
-        console.log("updated");
-        res.sendStatus(200);
-        // res.send("removed");
-        // res.redirect(`/author/${req.params.id}`);
       })
       .catch((err) => {
         return next(err);

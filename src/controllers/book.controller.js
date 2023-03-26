@@ -20,19 +20,20 @@ exports.book_create = (req, res, next) => {
   });
 };
 exports.book_update = function (req, res) {
-  console.log(req.body._id)
+  console.log(req.body);
   if (req.file) {
     req.body.coverImage = req.file.path
   }
-  Book.findByIdAndUpdate(
-    req.body._id,
-    { $set: req.body },
-    { new: true },
-    function (err, book) {
-      if (err) return next(err);
-      res.send(book);
-    }
-  );
+  console.log(req.body);
+  // Book.findByIdAndUpdate(
+  //   req.body._id,
+  //   { $set: req.body },
+  //   { new: true },
+  //   function (err, book) {
+  //     if (err) return next(err);
+  //     res.send(book);
+  //   }
+  // );
 };
 exports.book_delete = async (req, res, next) => {
   //? Callbacks Implementation

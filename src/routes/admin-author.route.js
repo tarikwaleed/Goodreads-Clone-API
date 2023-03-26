@@ -6,7 +6,7 @@ const upload = require('../middlewares/image_upload');
 const router = express.Router();
 
 router.post('/', upload.single('photo'), authorController.author_create);
-router.put('/:id',  authorController.author_update);
+router.put('/', upload.single('photo'), authorController.author_update);
 router.delete('/:id', authorController.author_delete);
 
 module.exports = router;
