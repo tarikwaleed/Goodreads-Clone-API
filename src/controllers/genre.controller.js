@@ -6,7 +6,7 @@ const { body, validationResult } = require("express-validator");
 exports.genre_list = function (req, res, next) {
   Genre.find()
     .exec()
-    .then((list_genre) => {
+    .then(async (list_genre) => {
       res.send(list_genre);
     })
     .catch((err) => {
@@ -19,7 +19,7 @@ exports.genre_details = async (req, res, next) => {
   try {
     var results = {};
     results["genre"] = await Genre.findById(req.params.id).exec();
-    results["genre_books"] = await Book.find({ genre: req.params.id }).exec();
+    results["genre_books"] = [];
 
     if (results.genre == null) {
       // No results.
@@ -27,8 +27,26 @@ exports.genre_details = async (req, res, next) => {
       err.status = 404;
       return next(err);
     }
+    await Book.find({ genre: req.params.id })
+      .populate("author")
+      .populate("ratings")
+      .exec()
+      .then((books) => {
+        for (book of books) {
+          results["genre_books"].push({
+            _id: book._id,
+            title: book.title,
+            summary: book.summary,
+            isbn: book.isbn,
+            coverImage: book.coverImage,
+            avgrating: book.averageRating || 0,
+          });
+        }
 
-    res.send(results.genre);
+        // res.json(genresAndBooks);
+      });
+
+    res.send(results);
     // Successful, so render
     // res.render("genre_detail", {
     //   title: "Genre Detail",
@@ -53,7 +71,7 @@ exports.genre_create_post = (req, res, next) => {
           .save()
           .then(() => {
             // res.sendStatus(200);
-            res.status(200).json(genre)
+            res.status(200).json(genre);
           })
           .catch((err) => {
             return next(err);
@@ -70,12 +88,14 @@ exports.genre_delete = async (req, res, next) => {
     var results = {};
     results["genre_books"] = await Book.find({ genre: req.params.id }).exec();
     if (results.genre_books.length > 0) {
-      return res.status(409).json({ message: "Cannot delete genre as it has related books." });
+      return res
+        .status(409)
+        .json({ message: "Cannot delete genre as it has related books." });
     }
 
     Genre.findByIdAndRemove(req.params.id)
       .then((data) => {
-        res.status(200).send(data)
+        res.status(200).send(data);
       })
       .catch((err) => {
         return next(err);
@@ -89,8 +109,7 @@ exports.genre_update = async (req, res, next) => {
   try {
     var results = await Genre.findById(req.params.id).exec();
     if (results == null) {
-      res.send("genre doesn't exist")
-
+      res.send("genre doesn't exist");
     }
 
     Genre.findByIdAndUpdate(req.params.id, {
@@ -98,7 +117,7 @@ exports.genre_update = async (req, res, next) => {
     })
       .then((data) => {
         console.log("updated");
-        res.status(200).json(data)
+        res.status(200).json(data);
       })
       .catch((err) => {
         return next(err);
