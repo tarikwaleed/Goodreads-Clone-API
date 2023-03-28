@@ -8,10 +8,10 @@ router.put("/", userBookController.update_user_book);
 router.delete("/", userBookController.delete_user_book);
 
 router.get(
-  "/currentlyReading/",
+  "/c",
   userBookController.user_books_currentlyReading_list
 );
-router.get("/wantToRead/", userBookController.user_books_wantToRead_list);
-router.get("/read/", userBookController.user_books_read_list);
+router.get("/w", userBookController.user_books_wantToRead_list);
+router.get("/r", userBookController.user_books_read_list);
 
 module.exports = router;

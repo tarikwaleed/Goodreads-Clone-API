@@ -25,15 +25,15 @@ exports.book_update = function (req, res) {
     req.body.coverImage = req.file.path
   }
   console.log(req.body);
-  // Book.findByIdAndUpdate(
-  //   req.body._id,
-  //   { $set: req.body },
-  //   { new: true },
-  //   function (err, book) {
-  //     if (err) return next(err);
-  //     res.send(book);
-  //   }
-  // );
+  Book.findByIdAndUpdate(
+    req.body._id,
+    { $set: req.body },
+    { new: true },
+    function (err, book) {
+      if (err) return next(err);
+      res.send(book);
+    }
+  );
 };
 exports.book_delete = async (req, res, next) => {
   //? Callbacks Implementation
