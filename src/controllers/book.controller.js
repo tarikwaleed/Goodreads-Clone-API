@@ -23,7 +23,7 @@ exports.book_create = (req, res, next) => {
 exports.book_update = function (req, res) {
   console.log(req.body);
   if (req.file) {
-    req.body.coverImage = req.file.path;
+    req.body.coverImage = req.file.path.replace("\\", "/");
   }
   console.log(req.body);
   Book.findByIdAndUpdate(

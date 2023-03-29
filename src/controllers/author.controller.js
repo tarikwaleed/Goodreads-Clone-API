@@ -84,8 +84,9 @@ exports.author_details = async (req, res, next) => {
 };
 
 exports.author_create = (req, res, next) => {
-  const first_name = req.body.authorName.split(" ")[0]
-  const last_name = req.body.authorName.split(" ")[1]
+  req.file.path = req.file.path.replace("\\", "/");
+  const first_name = req.body.authorName.split(" ")[0];
+  const last_name = req.body.authorName.split(" ")[1];
   const author = new Author({
     first_name: first_name,
     last_name: last_name,
@@ -95,15 +96,15 @@ exports.author_create = (req, res, next) => {
   author
     .save()
     .then((data) => {
-      res.status(200).json(data)
+      res.status(200).json(data);
     })
     .catch((err) => {
       return next(err);
     });
 };
-exports.author_update = async (req, res,next) => {
+exports.author_update = async (req, res, next) => {
   if (req.file) {
-    req.body.coverImage = req.file.path
+    req.body.photo = req.file.path.replace("\\", "/");
   }
 
   Author.findByIdAndUpdate(
@@ -114,7 +115,7 @@ exports.author_update = async (req, res,next) => {
       if (err) return next(err);
       res.status(200).json(author);
     }
-  )
+  );
 };
 
 exports.author_delete = async (req, res, next) => {
@@ -131,7 +132,7 @@ exports.author_delete = async (req, res, next) => {
     }
     Author.findByIdAndRemove(req.params.id)
       .then((data) => {
-        res.send(data)
+        res.send(data);
       })
       .catch((err) => {
         return next(err);
