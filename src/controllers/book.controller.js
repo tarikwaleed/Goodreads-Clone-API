@@ -22,7 +22,7 @@ exports.book_create = (req, res, next) => {
 exports.book_update = function (req, res) {
   console.log(req.body);
   if (req.file) {
-    req.body.coverImage = req.file.path
+    req.body.coverImage = req.file.path;
   }
   console.log(req.body);
   Book.findByIdAndUpdate(
@@ -60,19 +60,17 @@ exports.book_details = (req, res, next) => {
     .populate("genre")
     // .populate('reviews')
     // .populate('ratings')
-    .populate('ratingCount')
+    .populate("ratingCount")
     .populate({
-      path: 'ratings',
-      select: 'rating',
+      path: "ratings",
+      select: "rating",
     })
-    .exec().then(book => {
+    .exec()
+    .then((book) => {
       const bookObject = book.toObject();
       bookObject.ratingCount = book.ratingCount;
       res.send(bookObject);
-    })
-
-
-
+    });
 };
 
 exports.popular_book_list = (req, res, next) => {
@@ -114,6 +112,24 @@ exports.book_list = (req, res, next) => {
       if (err) {
         return next(err);
       }
-      res.json(book_list);
+      booklistupdated = [];
+      for (const book of book_list) {
+        booklistupdated.push({
+          _id: book._id,
+          title: book.title,
+          summary: book.summary,
+          isbn: book.isbn,
+          author: book.author,
+          genre: book.genre,
+          coverImage: book.coverImage,
+          reviews: book.reviews,
+          ratings: book.ratings,
+          currentlyReading: book.currentlyReading,
+          wantToRead: book.wantToRead,
+          read: book.read,
+          avgRating: book.averageRating || 0,
+        });
+      }
+      res.json(booklistupdated);
     });
 };

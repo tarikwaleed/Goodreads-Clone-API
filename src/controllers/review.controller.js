@@ -4,17 +4,17 @@ const { body, validationResult } = require("express-validator");
 
 // Display list of all review.
 exports.review_list = async function (req, res, next) {
-  const bookId = req.query.bookId
-  const filter = { book: bookId }
-  let results = {}
-
+  const bookId = req.query.bookId;
+  const filter = { book: bookId };
+  let results = {};
 
   try {
-    Review.find(filter).populate('user')
+    Review.find(filter)
+      .populate("user")
       .exec()
       .then((reviews) => {
-        results['length'] = reviews.length
-        results['data'] = reviews
+        results["length"] = reviews.length;
+        results["data"] = reviews;
         res.send(results);
       })
       .catch((err) => {
