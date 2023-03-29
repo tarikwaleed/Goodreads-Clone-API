@@ -2,7 +2,8 @@ const Book = require("../models/book.model");
 
 exports.book_create = (req, res, next) => {
   // Validate and sanitize fields.
-
+  req.file.path = req.file.path.replace("\\", "/");
+  console.log(req.file.path);
   const book = new Book({
     title: req.body.title,
     summary: req.body.summary,
