@@ -39,6 +39,44 @@ exports.authors_list = async function (req, res, next) {
   res.json(results);
 };
 
+exports.popular_author_list = async (req, res, next) => {
+  var results = [];
+  var authorAndBooks = {};
+  await Author.find()
+    .sort([["last_name", "ascending"]])
+    .exec()
+    .then(async (authors) => {
+      for (author of authors) {
+        authorAndBooks["author"] = author;
+        authorAndBooks["authors_books_rating"] = 0;
+        authorID = author._id;
+        await Book.find({ author: authorID })
+          .populate("ratings")
+          .exec()
+          .then((books) => {
+            for (book of books) {
+              authorAndBooks["authors_books_rating"] += book.averageRating;
+            }
+          });
+        results.push({
+          author: authorAndBooks["author"],
+          authors_books_rating: authorAndBooks["authors_books_rating"],
+        });
+      }
+    });
+  results.sort((a, b) =>
+    a.authors_books_rating > b.authors_books_rating ? -1 : 1
+  );
+
+  res.json(results);
+
+  // if (err) {
+  //   return next(err);
+  // }
+
+  // res.json(book_list);
+};
+
 exports.author_details = async (req, res, next) => {
   try {
     var results = {};
