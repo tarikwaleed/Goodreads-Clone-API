@@ -90,8 +90,12 @@ exports.popular_book_list = (req, res, next) => {
 
       book_list.sort((a, b) => (a.averageRating > b.averageRating ? -1 : 1));
       book_list = book_list.map((book) => {
-        return { ...book, avgRating: "book.averageRating" };
+        return {
+          book: book,
+          avgRating: book.averageRating,
+        };
       });
+
       //   for (book of book_list) {
       //     book._id = "13216543213546";
       //     console.log(book._id);
