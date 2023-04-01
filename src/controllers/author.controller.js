@@ -122,9 +122,10 @@ exports.author_details = async (req, res, next) => {
 };
 
 exports.author_create = (req, res, next) => {
+  console.log("==============");
   req.file.path = req.file.path.replace("\\", "/");
   const first_name = req.body.authorName.split(" ")[0];
-  const last_name = req.body.authorName.split(" ")[1];
+  const last_name = req.body.authorName.split(" ")[1] || " ";
   const author = new Author({
     first_name: first_name,
     last_name: last_name,
@@ -144,13 +145,23 @@ exports.author_update = async (req, res, next) => {
   if (req.file) {
     req.body.photo = req.file.path.replace("\\", "/");
   }
+  console.log(req.body);
 
+  data = {
+    first_name: req.body.authorName.split(" ")[0],
+    last_name: req.body.authorName.split(" ")[1] || " ",
+    data_of_birth: req.body.data_of_birth,
+    photo: req.body.photo,
+  };
   Author.findByIdAndUpdate(
     req.body._id,
-    { $set: req.body },
+    { $set: data },
     { new: true },
     function (err, author) {
-      if (err) return next(err);
+      if (err) {
+        console.log(err);
+        return next(err);
+      }
       res.status(200).json(author);
     }
   );
